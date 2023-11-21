@@ -1,0 +1,6 @@
+[submodule "externals/UPR"]
+	path = externals/UPR
+	url = https://github.com/DevSinghSachan/unsupervised-passage-reranking.git
+[submodule "externals/MonoT5"]
+	path = externals/MonoT5
+	url = https://github.com/castorini/pygaggle.git
