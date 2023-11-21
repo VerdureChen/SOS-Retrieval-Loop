@@ -179,3 +179,23 @@ class ElasticSearchBM25Retriever(BaseRetriever):
         """
         res = self.client.count(index=self.index_name)
         return res.get("count", 0)
+
+    def get_document_by_id(self, doc_id: str) -> Document:
+        """Get a document by its ID.
+
+        Args:
+            doc_id: ID of the document to retrieve.
+
+        Returns:
+            The document corresponding to the given ID.
+        """
+        query_dict = {"query": {"match": {"metadata.id": doc_id}}, "size": 1}
+        res = self.client.search(index=self.index_name, body=query_dict)
+
+        if res["hits"]["total"]["value"] > 0:
+            doc = res["hits"]["hits"][0]["_source"]
+            page_content = doc["content"]
+            metadata = doc.get("metadata", {})
+            return Document(page_content=page_content, metadata=metadata)
+
+        return None
