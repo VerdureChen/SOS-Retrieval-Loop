@@ -1,0 +1,58 @@
+# My Folder #
+#############
+indexes/
+input_data/
+raw_data/
+ret_output/
+zero_gen_data/
+elasticsearch-8.11.1/
+flash-attention/
+llama-2-13b-chat-hf/
+llm_logs/
+ret_model/
+logs/
+# any folder name started with api-for-open-llm
+api-for-open-llm/
+api-for-open-llm-2/
+api-for-open-llm-chatglm/
+api-for-open-llm-qwen
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.faiss
+*.pkl
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

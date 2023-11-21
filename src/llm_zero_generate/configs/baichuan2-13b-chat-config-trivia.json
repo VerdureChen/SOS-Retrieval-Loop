@@ -1,0 +1,5 @@
+{
+  "model_name": "baichuan2-13b-chat",
+  "question_file_path": "../../data_v2/input_data/DPR/tqa-test.jsonl",
+  "output_file_path": "../../data_v2/zero_gen_data/trash/tqa-test-gen-baichuan2-13b-chat.jsonl"
+}

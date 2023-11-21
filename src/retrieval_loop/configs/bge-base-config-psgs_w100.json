@@ -1,0 +1,12 @@
+{
+      "new_text_file": "../../data_v2/input_data/DPR/psgs_w100.jsonl",
+      "retrieval_model": "bge-base",
+      "index_name": "bge-base_faiss_index",
+      "index_path": "../../data_v2/indexes",
+      "page_content_column": "contents",
+      "index_exists": false,
+      "normalize_embeddings": true,
+      "query_file": "../../data_v2/zero_gen_data/DPR/nq-test-h10.jsonl",
+      "query_page_content_column": "question",
+      "output_file": "../../data_v2/ret_output/DPR/nq-test-h10-bge-base"
+    }

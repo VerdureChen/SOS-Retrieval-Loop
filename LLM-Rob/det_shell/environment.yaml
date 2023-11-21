@@ -1,0 +1,10 @@
+name: llm-api-test
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10.0
+  - openjdk=11
+  - pip:
+      - --requirement requirements.txt

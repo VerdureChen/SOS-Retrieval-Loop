@@ -1,0 +1,5 @@
+{
+  "model_name": "Qwen",
+  "question_file_path": "../../data_v2/input_data/DPR/webq-test.jsonl",
+  "output_file_path": "../../data_v2/zero_gen_data/DPR/webq-test-gen-qwen-14b-chat.jsonl"
+}

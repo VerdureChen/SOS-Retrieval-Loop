@@ -1,0 +1,22 @@
+description: cxy_api
+
+environment:
+  image: docker.cipsup.cn/chenxiaoyang/llm-api-det0.19.10
+  force_pull_image: true
+  environment_variables:
+    - WANDB_API_KEY=c0e05836a27552902b8ade8ee85a9fb03e868b22
+    - HOME=/run/determined/workdir
+    - XDG_CACHE_HOME=/run/determined/workdir/output/cache
+    - PATH=/run/determined/pythonuserbase/bin:/opt/conda/envs/env/bin:/opt/conda/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/env/determined/bin
+
+
+bind_mounts:
+  - host_path: /ceph_home/xiaoyang2020/chenxiaoyang_11/Rob_LLM
+    container_path: /mnt/ceph_home/Rob_LLM
+  - host_path: /ceph_home/arknet
+    container_path: /mnt/ceph_home/arknet
+
+
+resources:
+  slots: 2
+  resource_pool: A100-80G

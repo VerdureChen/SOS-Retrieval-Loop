@@ -1,0 +1,12 @@
+{
+      "new_text_file": "../../data_v2/input_data/DPR/psgs_w100.jsonl",
+      "retrieval_model": "BM25",
+      "index_name": "bm25_psgs_index",
+      "index_path": "../../data_v2/indexes",
+      "page_content_column": "contents",
+      "index_exists": false,
+      "normalize_embeddings": false,
+      "query_file": "../../data_v2/input_data/DPR/nq-test-h10.jsonl",
+      "query_page_content_column": "question",
+      "output_file": "../../data_v2/ret_output/DPR/nq-test-h10-bm25"
+    }

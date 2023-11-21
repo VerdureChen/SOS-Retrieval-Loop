@@ -1,0 +1,5 @@
+{
+  "model_name": "chatglm3",
+  "question_file_path": "../../data_v2/input_data/DPR/pop-test.jsonl",
+  "output_file_path": "../../data_v2/zero_gen_data/DPR/pop-test-gen-chatglm3-6b-chat.jsonl"
+}
