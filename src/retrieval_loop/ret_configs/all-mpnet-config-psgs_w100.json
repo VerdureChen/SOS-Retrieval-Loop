@@ -1,0 +1,15 @@
+{
+      "retrieval_model": "all-mpnet-base-v2",
+      "index_name": "all-mpnet_faiss_index_h100",
+      "index_path": "../../data_v2/indexes",
+      "normalize_embeddings": true,
+      "query_files": ["../../data_v2/input_data/DPR/nq-test.jsonl",
+                     "../../data_v2/input_data/DPR/webq-test.jsonl",
+                     "../../data_v2/input_data/DPR/pop-test.jsonl",
+                     "../../data_v2/input_data/DPR/tqa-test.jsonl"],
+      "query_page_content_column": "question",
+      "output_files": ["../../data_v2/ret_output/DPR/nq-test-all-mpnet",
+                      "../../data_v2/ret_output/DPR/webq-test-all-mpnet",
+                      "../../data_v2/ret_output/DPR/pop-test-all-mpnet",
+                      "../../data_v2/ret_output/DPR/tqa-test-all-mpnet"]
+    }

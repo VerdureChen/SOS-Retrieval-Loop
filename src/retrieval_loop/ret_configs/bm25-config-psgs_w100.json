@@ -4,7 +4,13 @@
       "index_path": "../../data_v2/indexes",
       "page_content_column": "contents",
       "normalize_embeddings": false,
-      "query_file": "../../data_v2/input_data/DPR/nq-test.jsonl",
+      "query_files": ["../../data_v2/input_data/DPR/nq-test.jsonl",
+                     "../../data_v2/input_data/DPR/webq-test.jsonl",
+                     "../../data_v2/input_data/DPR/pop-test.jsonl",
+                     "../../data_v2/input_data/DPR/tqa-test.jsonl"],
       "query_page_content_column": "question",
-      "output_file": "../../data_v2/ret_output/DPR/nq-test-bm25-async"
+      "output_files": ["../../data_v2/ret_output/DPR/nq-test-bm25-async",
+                       "../../data_v2/ret_output/DPR/webq-test-bm25-async",
+                       "../../data_v2/ret_output/DPR/pop-test-bm25-async",
+                       "../../data_v2/ret_output/DPR/tqa-test-bm25-async"]
     }

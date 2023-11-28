@@ -6,7 +6,7 @@
       "page_content_column": "contents",
       "index_exists": false,
       "normalize_embeddings": true,
-      "query_file": "../../data_v2/zero_gen_data/DPR/nq-test-h10.jsonl",
+      "query_files": ["../../data_v2/input_data/DPR/nq-test-h10.jsonl"],
       "query_page_content_column": "question",
-      "output_file": "../../data_v2/ret_output/DPR/nq-test-h10-bge-base"
+      "output_files": ["../../data_v2/ret_output/DPR/nq-test-h10-bge-base"]
     }

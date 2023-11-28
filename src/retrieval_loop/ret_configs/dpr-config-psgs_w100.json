@@ -3,7 +3,7 @@
       "index_name": "DPR_faiss_index",
       "index_path": "../../data_v2/indexes",
       "normalize_embeddings": false,
-      "query_file": "../../data_v2/input_data/DPR/nq-test.jsonl",
+      "query_files": ["../../data_v2/input_data/DPR/nq-test.jsonl"],
       "query_page_content_column": "question",
-      "output_file": "../../data_v2/ret_output/DPR/nq-test-dpr-async"
+      "output_files": ["../../data_v2/ret_output/DPR/nq-test-dpr-async"]
     }
