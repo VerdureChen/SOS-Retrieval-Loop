@@ -240,13 +240,16 @@ def has_answers(text, answers, tokenizer, regex=False):
 
 def evaluate_retrieval(retrieval_file, topk, regex=False):
     tokenizer = SimpleTokenizer()
-    retrieval = json.load(open(retrieval_file))
+    retrieval = json.load(open(retrieval_file, 'r', encoding='utf-8'))
     accuracy = { k : [] for k in topk }
     max_k = max(topk)
 
     for qid in tqdm(list(retrieval.keys())):
         answers = retrieval[qid]['answers']
-        contexts = retrieval[qid]['contexts']
+        try:
+            contexts = retrieval[qid]['contexts']
+        except KeyError:
+            contexts = retrieval[qid]['ctxs']
         has_ans_idx = max_k  # first index in contexts that has answers
 
         for idx, ctx in enumerate(contexts):

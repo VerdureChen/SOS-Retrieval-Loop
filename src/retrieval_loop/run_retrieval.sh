@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-MODEL_NAMES=(contriever retromae) # dpr contriever) # retromae all-mpnet bge llm-embedder bm25 contriever dpr)
+MODEL_NAMES=(bge-large all-mpnet) # dpr contriever) # retromae all-mpnet bge llm-embedder bm25 contriever dpr)
 DATA_NAMES=(psgs_w100)
 
 for MODEL_NAME in "${MODEL_NAMES[@]}"

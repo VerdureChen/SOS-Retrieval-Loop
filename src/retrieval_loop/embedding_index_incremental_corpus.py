@@ -31,7 +31,7 @@ def get_args():
     args = parser.parse_args()
     # read config file
     config_file_path = args.config_file_path
-    with open(config_file_path, "r") as f:
+    with open(config_file_path, "r", encoding='utf-8') as f:
         config = json.load(f)
     print(f'config: {config}')
 
@@ -180,9 +180,9 @@ if __name__ == '__main__':
     for i in range(file_count):
         new_text_file_list.append(f'{new_text_file}_{retrieval_model}_{i}.jsonl')
     # split the file
-    with open(new_text_file, 'r') as f:
+    with open(new_text_file, 'r', encoding='utf-8') as f:
         for i in tqdm(range(file_count), desc='splitting the new text file'):
-            with open(new_text_file_list[i], 'w') as f2:
+            with open(new_text_file_list[i], 'w', encoding='utf-8') as f2:
                 for j in range(2000000):
                     line = f.readline()
                     f2.write(line)
@@ -198,17 +198,17 @@ if __name__ == '__main__':
     for i in range(file_count):
         os.remove(new_text_file_list[i])
 
-    query_file = config["query_file"]
+    query_files = config["query_files"]
     page_content_column = config["query_page_content_column"]
     retrieval_model = config["retrieval_model"]
     index_name = config["index_name"]
     index_path = config["index_path"]
     normalize_embeddings = config["normalize_embeddings"]
-    output_file = config["output_file"]
+    output_files = config["output_files"]
 
     # test the index
     # load the test query file
 
-    Retrieval(query_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_file)
+    Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
+              output_files)
 

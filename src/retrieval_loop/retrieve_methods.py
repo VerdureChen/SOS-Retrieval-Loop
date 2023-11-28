@@ -28,9 +28,9 @@ def get_args():
     args = parser.parse_args()
     # read config file
     config_file_path = args.config_file_path
-    with open(config_file_path, "r") as f:
+    with open(config_file_path, "r", encoding='utf-8') as f:
         config = json.load(f)
-
+    print("config: ", config)
     return config
 
 
@@ -46,12 +46,9 @@ def load_retrieval_embeddings(retrieval_model, normalize_embeddings=False):
     return embeddings
 
 
-def Retrieval(query_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_file):
-    # load queries
-    loader = HuggingFaceDatasetLoader('json', data_files=query_file,
-                                      page_content_column=page_content_column)
-    queries = loader.load()
+def Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
+              output_files):
+
 
     # map retrieval model names: DPR, Contriever, RetroMAE, all-mpnet, BGE, LLM-Embedder
     query_instruction = ''
@@ -104,74 +101,80 @@ def Retrieval(query_file, page_content_column, retrieval_model, index_name, inde
 
     print(f'loaded index: {index_name}, size: {index_size}')
 
-    # retrieve
-    print('retrieving ...')
-    output_file_json = output_file + '.json'
-    output_file_trec = output_file + '.trec'
+    for query_file, output_file in zip(query_files, output_files):
+        # load queries
+        loader = HuggingFaceDatasetLoader('json', data_files=query_file,
+                                          page_content_column=page_content_column)
+        queries = loader.load()
 
-    with open(output_file_trec, 'w') as f_t:
-        retrieval = {}
-        tokenizer = SimpleTokenizer()
-        batch_size = 1024  # Set the batch size as per your requirement
-        batch_queries = [queries[i:i + batch_size] for i in range(0, len(queries), batch_size)]
+        # retrieve
+        print('retrieving ...')
+        output_file_json = output_file + '.json'
+        output_file_trec = output_file + '.trec'
 
-        for batch in tqdm(batch_queries):
-            print(f'processing batch of size {len(batch)} ...')
-            batch_query_texts = [query_instruction + query.page_content for query in batch]
-            batch_metadata = [query.metadata for query in batch]
-            batch_query_ids = [metadata['id'] for metadata in batch_metadata]
-            batch_answers = [metadata['answer'] for metadata in batch_metadata]
 
-            assert all(type(answer) == list for answer in batch_answers)
+        with open(output_file_trec, 'w', encoding='utf-8') as f_t:
+            retrieval = {}
+            tokenizer = SimpleTokenizer()
+            batch_size = 1024  # Set the batch size as per your requirement
+            batch_queries = [queries[i:i + batch_size] for i in range(0, len(queries), batch_size)]
 
-            if "DPR" in retrieval_model.upper():
-                embedded_queries = query_embeddings.embed_queries(batch_query_texts)
-                batch_docs_and_scores = index.similarity_search_with_score_by_vector(embedded_queries, k=100)
-            elif retrieval_model != "BM25":
-                embedded_queries = embeddings.embed_queries(batch_query_texts)
-                batch_docs_and_scores = index.similarity_search_with_score_by_vector(embedded_queries, k=100)
-            else:
-                batch_docs_and_scores = [index.get_relevant_documents(query_text, num_docs=100) for query_text in
-                                         tqdm(batch_query_texts)]
+            for batch in tqdm(batch_queries):
+                print(f'processing batch of size {len(batch)} ...')
+                batch_query_texts = [query_instruction + query.page_content for query in batch]
+                batch_metadata = [query.metadata for query in batch]
+                batch_query_ids = [metadata['id'] for metadata in batch_metadata]
+                batch_answers = [metadata['answer'] for metadata in batch_metadata]
 
-            for query_idx, (query, docs_and_scores) in enumerate(zip(batch, batch_docs_and_scores)):
-                query_id = batch_query_ids[query_idx]
-                answer = batch_answers[query_idx]
+                assert all(type(answer) == list for answer in batch_answers)
 
-                if query_id not in retrieval:
-                    retrieval[query_id] = {'question': query.page_content, 'answers': answer, 'contexts': []}
+                if "DPR" in retrieval_model.upper():
+                    embedded_queries = query_embeddings.embed_queries(batch_query_texts)
+                    batch_docs_and_scores = index.similarity_search_with_score_by_vector(embedded_queries, k=100)
+                elif retrieval_model != "BM25":
+                    embedded_queries = embeddings.embed_queries(batch_query_texts)
+                    batch_docs_and_scores = index.similarity_search_with_score_by_vector(embedded_queries, k=100)
+                else:
+                    batch_docs_and_scores = [index.get_relevant_documents(query_text, num_docs=100) for query_text in
+                                             tqdm(batch_query_texts)]
 
-                for i, (doc, score) in enumerate(docs_and_scores):
-                    rank = i + 1
-                    doc_id = doc.metadata['id']
-                    doc_content = doc.page_content
-                    if doc_instruction != '':
-                        assert doc_content.startswith(doc_instruction)
-                        doc_content = doc_content[len(doc_instruction):]
-                    title, text = doc_content.split('\n')
-                    tag = retrieval_model.split('/')[-1]
-                    f_t.write(f'{query_id} Q0 {doc_id} {rank} {score} {tag}\n')
+                for query_idx, (query, docs_and_scores) in enumerate(zip(batch, batch_docs_and_scores)):
+                    query_id = batch_query_ids[query_idx]
+                    answer = batch_answers[query_idx]
 
-                    answer_exist = has_answers(text, answer, tokenizer, False)
-                    retrieval[query_id]['contexts'].append(
-                        {'docid': doc_id, 'score': float(score), 'has_answer': answer_exist}
-                    )
-        json.dump(retrieval, open(output_file_json, 'w'), indent=4, ensure_ascii=False)
+                    if query_id not in retrieval:
+                        retrieval[query_id] = {'question': query.page_content, 'answers': answer, 'contexts': []}
 
-    # evaluate
-    # TODO
-    evaluate_retrieval(output_file_json, [20, 100], False)
+                    for i, (doc, score) in enumerate(docs_and_scores):
+                        rank = i + 1
+                        doc_id = doc.metadata['id']
+                        doc_content = doc.page_content
+                        if doc_instruction != '':
+                            assert doc_content.startswith(doc_instruction)
+                            doc_content = doc_content[len(doc_instruction):]
+                        title, text = doc_content.split('\n')
+                        tag = retrieval_model.split('/')[-1]
+                        f_t.write(f'{query_id} Q0 {doc_id} {rank} {score} {tag}\n')
+
+                        answer_exist = has_answers(text, answer, tokenizer, False)
+                        retrieval[query_id]['contexts'].append(
+                            {'docid': doc_id, 'score': float(score), 'has_answer': answer_exist}
+                        )
+            json.dump(retrieval, open(output_file_json, 'w', encoding='utf-8'), indent=4, ensure_ascii=False)
+
+        # evaluate
+        evaluate_retrieval(output_file_json, [20, 100], False)
 
 
 if __name__ == '__main__':
     config = get_args()
-    query_file = config["query_file"]
+    query_files = config["query_files"]
     page_content_column = config["query_page_content_column"]
     retrieval_model = config["retrieval_model"]
     index_name = config["index_name"]
     index_path = config["index_path"]
     normalize_embeddings = config["normalize_embeddings"]
-    output_file = config["output_file"]
+    output_files = config["output_files"]
 
-    Retrieval(query_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_file)
+    Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
+              output_files)
