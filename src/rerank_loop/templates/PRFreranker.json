@@ -1,0 +1,6 @@
+{
+    "description": "Template used by LLMreranker.",
+    "prompt_input": "Given the current search query and the first few documents from the input candidates acting as pseudo-relevant feedback, please rank the {num} candidates based on their relevance. The pseudo-relevant feedback passages may contain useful information about the query. The candidates should be listed in descending order of relevance using their identifiers, with the most relevant listed first. The output format should be [] > [] > etc, just output the identifiers of the candidates not the text.\n\n### Query:\n{instruction}\n\n### Candidates:\n{input}\n\n### Pseudo-Relevant Feedback:\n{feedback_documents}\n\n### Response:\n",
+    "prompt_no_input": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{instruction}\n\n### Response:\n",
+    "response_split": "### Response:"
+}

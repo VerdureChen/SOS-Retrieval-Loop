@@ -1,0 +1,6 @@
+{
+    "description": "Template used by LLMreranker.",
+    "prompt_input": "Rank the {num} passages based on their relevance to the search query. The passages will be listed in descending order using identifiers, and the most relevant passages should be listed first, and the output format should be [] > [] > etc\n\n### Query:\n{instruction}\n\n### Candidates:\n{input}\n\n### Response:\n",
+    "prompt_no_input": "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{instruction}\n\n### Response:\n",
+    "response_split": "### Response:"
+}
