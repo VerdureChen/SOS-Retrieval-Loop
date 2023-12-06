@@ -1,0 +1,8 @@
+{
+       "id_files": ["../run_logs/loop_log_20231206080153/index_add_logs/dpr_test_index_20231206-081124.txt"],
+       "model_name": "faiss",
+       "index_path": "../../data_v2/indexes",
+       "index_name": "dpr_test_index",
+       "elasticsearch_url": "http://124.16.138.142:9978",
+       "delete_log_path": "../run_logs/loop_log_20231206080153/index_add_logs"
+}

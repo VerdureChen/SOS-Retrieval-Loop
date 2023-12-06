@@ -1,0 +1,9 @@
+{
+  "model_name": "gpt-3.5-turbo",
+  "question_file_path": "../../data_v2/ret_output/DPR/nq-test-h10-bge-large.json",
+  "output_file_path": "../../data_v2/incxt_gen_data/DPR/nq-test-h10-gen-gpt-3.5-turbo.jsonl",
+  "with_context": true,
+  "elasticsearch_url": "http://124.16.138.142:9978",
+  "index_name": "bm25_psgs_index",
+  "context_ref_num": 5
+}

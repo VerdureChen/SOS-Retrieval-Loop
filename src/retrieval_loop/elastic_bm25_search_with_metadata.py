@@ -43,7 +43,8 @@ class ElasticSearchBM25Retriever(BaseRetriever):
 
     @classmethod
     def create(
-        cls, elasticsearch_url: str, index_name: str, k1: float = 2.0, b: float = 0.75, overwrite_existing_index: bool = False
+        cls, elasticsearch_url: str, index_name: str, k1: float = 2.0, b: float = 0.75, overwrite_existing_index: bool = False,
+            verbose: bool = True
     ) -> ElasticSearchBM25Retriever:
         """
         Create a ElasticSearchBM25Retriever from a list of texts.
@@ -63,12 +64,14 @@ class ElasticSearchBM25Retriever(BaseRetriever):
         es = Elasticsearch(elasticsearch_url)
         if es.indices.exists(index=index_name):
             # print the index settings
-            print(f'index already exists: {index_name}')
+            if verbose:
+                print(f'index already exists: {index_name}')
             if overwrite_existing_index:
                 print(f'overwriting existing index: {index_name}')
                 es.indices.delete(index=index_name)
             else:
-                print(es.indices.get_settings(index=index_name))
+                if verbose:
+                    print(es.indices.get_settings(index=index_name))
                 return cls(client=es, index_name=index_name)
 
 
@@ -91,7 +94,12 @@ class ElasticSearchBM25Retriever(BaseRetriever):
                 },
                 "metadata": {
                     "type": "object",
-                    "enabled": True
+                    "enabled": True,
+                    "properties": {
+                        "id": {
+                            "type": "keyword"  # Set metadata.id field as keyword type
+                        }
+                }
                 }
             }
         }
@@ -189,9 +197,9 @@ class ElasticSearchBM25Retriever(BaseRetriever):
         Returns:
             The document corresponding to the given ID.
         """
-        query_dict = {"query": {"match": {"metadata.id": doc_id}}, "size": 1}
+        query_dict = {"query": {"term": {"metadata.id": doc_id}}, "size": 1}
         res = self.client.search(index=self.index_name, body=query_dict)
-
+        #print(res["hits"])
         if res["hits"]["total"]["value"] > 0:
             doc = res["hits"]["hits"][0]["_source"]
             page_content = doc["content"]
@@ -199,3 +207,36 @@ class ElasticSearchBM25Retriever(BaseRetriever):
             return Document(page_content=page_content, metadata=metadata)
 
         return None
+
+    def delete_documents_by_id(self, ids: List[str]) -> None:
+        """Delete documents by their IDs.
+
+        Args:
+            ids: List of IDs of documents to delete.
+        """
+        for _id in ids:
+            try:
+                self.client.delete(index=self.index_name, id=_id)
+            except:
+                print(f"Document with id {_id} not found in index {self.index_name}")
+
+        self.client.indices.refresh(index=self.index_name)
+
+        print(f'delete documents by id: {ids}')
+
+    def delete_documents_by_metaid(self, metaids: List[str]) -> None:
+        """Delete documents by their IDs.
+
+        Args:
+            ids: List of IDs of documents to delete.
+        """
+        for _id in metaids:
+            try:
+                self.client.delete_by_query(index=self.index_name, body={"query": {"term": {"metadata.id": _id}}})
+            except:
+                print(f"Document with id {_id} not found in index {self.index_name}")
+
+        self.client.indices.refresh(index=self.index_name)
+
+        print(f'delete documents by metadata id: {metaids}')
+

@@ -1,0 +1,7 @@
+{
+        "loop_num": 0,
+        "gen_model_name": "llama2",
+        "query_set_name": "nq",
+        "output_dir": "../../data_v2/test_output/DPR/nq-test-gen-llama2-13b-chat.jsonl",
+        "input_file": "../../data_v2/zero_gen_data/DPR/nq-test-gen-llama2-13b-chat.jsonl"
+}

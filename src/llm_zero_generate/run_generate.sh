@@ -5,15 +5,15 @@
 #MODEL_NAMES=(llama2-13b-chat baichuan2-13b-chat) #running: pop trivia finished: nq wq
 
 MODEL_NAMES=(gpt-3.5-turbo) #running: pop trivia finished: nq wq
-DATA_NAMES=(trivia)
+DATA_NAMES=(nq)
 
 for MODEL_NAME in "${MODEL_NAMES[@]}"
 do
   for DATA_NAME in "${DATA_NAMES[@]}"
   do
     echo "Generating responses for ${MODEL_NAME} on ${DATA_NAME}..."
-    CONFIG_PATH="configs/${MODEL_NAME}-config-${DATA_NAME}.json"
-    LOG_DIR="logs/${MODEL_NAME}_${DATA_NAME}_gen_rerun.log"
+    CONFIG_PATH="rag_configs/${MODEL_NAME}-config-${DATA_NAME}.json"
+    LOG_DIR="logs/${MODEL_NAME}_${DATA_NAME}_gen_incxt.log"
 
     python get_response_llm.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &
   done

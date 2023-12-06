@@ -113,6 +113,40 @@ class Batch_FAISS(FAISS):
             results.append(docs[:k])
         return results
 
+    def delete(self, ids: Optional[List[str]] = None, **kwargs: Any) -> Optional[bool]:
+        """Delete by ID. These are the IDs in the vectorstore.
+
+        Args:
+            ids: List of ids to delete.
+
+        Returns:
+            Optional[bool]: True if deletion is successful,
+            False otherwise, None if not implemented.
+        """
+        if ids is None:
+            raise ValueError("No ids provided to delete.")
+        missing_ids = set(ids).difference(self.index_to_docstore_id.values())
+        if missing_ids:
+            raise ValueError(
+                f"Some specified ids do not exist in the current store. Ids not found: "
+                f"{missing_ids}"
+            )
+
+        reversed_index = {id_: idx for idx, id_ in self.index_to_docstore_id.items()}
+        index_to_delete = [reversed_index[id_] for id_ in ids]
+
+        self.index.remove_ids(np.array(index_to_delete, dtype=np.int64))
+        self.docstore.delete(ids)
+
+        remaining_ids = [
+            id_
+            for i, id_ in sorted(self.index_to_docstore_id.items())
+            if i not in index_to_delete
+        ]
+        self.index_to_docstore_id = {i: id_ for i, id_ in enumerate(remaining_ids)}
+
+        return True
+
 
 class Batch_HuggingFaceEmbeddings(HuggingFaceEmbeddings):
     def __init__(self, *args, **kwargs):

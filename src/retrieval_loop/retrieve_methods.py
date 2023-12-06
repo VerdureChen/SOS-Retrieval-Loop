@@ -109,7 +109,7 @@ def Retrieval(query_files, page_content_column, retrieval_model, index_name, ind
 
         # retrieve
         print('retrieving ...')
-        output_file_json = output_file + '.json'
+        output_file_json = output_file
         output_file_trec = output_file + '.trec'
 
 
@@ -152,7 +152,10 @@ def Retrieval(query_files, page_content_column, retrieval_model, index_name, ind
                         if doc_instruction != '':
                             assert doc_content.startswith(doc_instruction)
                             doc_content = doc_content[len(doc_instruction):]
-                        title, text = doc_content.split('\n')
+                        if len(doc_content.split('\n')) > 1:
+                            title, text = doc_content.split('\n', 1)
+                        else:
+                            text = doc_content
                         tag = retrieval_model.split('/')[-1]
                         f_t.write(f'{query_id} Q0 {doc_id} {rank} {score} {tag}\n')
 

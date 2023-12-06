@@ -15,7 +15,7 @@ do
   for DATA_NAME in "${DATA_NAMES[@]}"
   do
     echo "Running rerank for ${MODEL_NAME} on ${DATA_NAME}..."
-    CONFIG_PATH="upr_configs/${MODEL_NAME}-config-${DATA_NAME}.json"
+    CONFIG_PATH="rerank_configs/${MODEL_NAME}-config-${DATA_NAME}.json"
     LOG_DIR="logs/${MODEL_NAME}_${DATA_NAME}_rerank_base_${BASE_METHOD}.log"
 
     # 运行分布式Python脚本

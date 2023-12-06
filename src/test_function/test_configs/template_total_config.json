@@ -1,0 +1,31 @@
+{
+  "indexing": {
+        "new_text_file": "../../data_v2/input_data/DPR/psgs_w100_h100.jsonl",
+        "page_content_column": "contents",
+        "normalize_embeddings": true,
+        "query_files": ["../../data_v2/input_data/DPR/nq-test-h10.jsonl"],
+        "query_page_content_column": "question",
+        "output_files": ["../../data_v2/ret_output/DPR/nq-test-h10-test"]
+  },
+  "retrieval":{
+        "normalize_embeddings": true,
+        "query_page_content_column": "question"
+      },
+  "rerank": {
+      "num_workers": 2,
+      "log_interval": 1,
+      "topk_passages": 100,
+      "use_gpu": true,
+      "report_topk_accuracies": [1, 5, 20, 100],
+      "merge_shards_and_save": true,
+      "elasticsearch_url": "http://124.16.138.142:9978"
+  },
+  "generate": {
+      "with_context": true,
+      "elasticsearch_url": "http://124.16.138.142:9978",
+      "context_ref_num": 5
+  },
+  "post_process": {
+      "query_set_name": "nq"
+  }
+    }

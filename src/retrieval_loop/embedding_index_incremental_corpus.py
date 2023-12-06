@@ -14,6 +14,7 @@ from tqdm import tqdm
 import torch
 import sys
 from math import ceil
+import time
 sys.stdout.flush()
 
 def get_args():
@@ -48,7 +49,7 @@ def load_retrieval_embeddings(retrieval_model, normalize_embeddings=False):
     return embeddings
 
 
-def main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists):
+def main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path):
 
     # load the new text file
     loader = HuggingFaceDatasetLoader('json', data_files=new_text_file,
@@ -102,19 +103,27 @@ def main(new_text_file, page_content_column, retrieval_model, index_name, index_
             index = FAISS.load_local(index_p, embeddings)
             print(f'loaded {retrieval_model} index: {index_name}, length: {len(index.docstore._dict)}')
             print(f'adding new text to index')
-            db2 = FAISS.from_documents(new_text, embeddings, distance_strategy=DistanceStrategy.MAX_INNER_PRODUCT)
-            index.merge_from(db2)
+            # db2 = FAISS.from_documents(new_text, embeddings, distance_strategy=DistanceStrategy.MAX_INNER_PRODUCT)
+            # index.merge_from(db2)
+            # index.save_local(index_p)
+            new_ids = index.add_documents(new_text)
             index.save_local(index_p)
-            print(f'added {len(db2.docstore._dict)} new text to index: {index_name}, length: {len(index.docstore._dict)}')
+            print(f'added {len(new_ids)} new text to index: {index_name}, length: {len(index.docstore._dict)}')
         else:
             index = ElasticSearchBM25Retriever.create(elasticsearch_url, index_name)
             index_size = index.get_document_count()
             print(f'loaded {retrieval_model} index: {index_name}, length: {index_size}')
             print(f'adding new text to index')
-            index.add_texts(new_text)
+            new_ids = index.add_texts(new_text)
             index_size = index.get_document_count()
-            print(f'added {len(new_text)} new text to index: {index_name}, length: {index_size}')
+            print(f'added {len(new_ids)} new text to index: {index_name}, length: {index_size}')
 
+        index_log_name = f'{index_name}_{time.strftime("%Y%m%d-%H%M%S")}.log'
+        index_log_file = os.path.join(index_log_path, index_log_name)
+        with open(index_log_file, 'w', encoding='utf-8') as f:
+            for id in new_ids:
+                f.write(f'{id}\n')
+        print(f'created index log file: {index_log_file}')
     else:
         print(f'index: {index_name} does not exist')
         print(f'creating {retrieval_model} index')
@@ -153,6 +162,9 @@ if __name__ == '__main__':
     index_name = config["index_name"]
     index_path = config["index_path"]
     index_exists = config["index_exists"]
+    index_log_path = os.path.join(config["index_add_path"], 'index_add_logs')
+    if not os.path.exists(index_log_path):
+        os.makedirs(index_log_path)
     # json:
     # {
     #   "new_text_file": "../../data_v2/zero_gen_data/DPR/nq-test-gen-baichuan2-13b-chat.jsonl",
@@ -192,7 +204,7 @@ if __name__ == '__main__':
             index_exists = True
         new_text_file = new_text_file_list[i]
         print(f'processing file: {new_text_file}')
-        main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists)
+        main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path)
 
     #remove the split files
     for i in range(file_count):

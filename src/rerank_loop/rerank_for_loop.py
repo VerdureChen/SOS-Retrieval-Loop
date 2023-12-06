@@ -75,6 +75,9 @@ class UnsupervisedPassageReranker():
 
         self.index = ElasticSearchBM25Retriever.create(self.args.elasticsearch_url, self.args.index_name)
 
+        index_size = self.index.get_document_count()
+        print_rank_0("Index size: {}".format(index_size))
+
         self.dataset = get_openqa_dataset(self.args.task_name,
                                           self.args.retriever_topk_passages_path,
                                           sample_rate=self.args.sample_rate)
@@ -306,6 +309,9 @@ class MonoT5Reranker(UnsupervisedPassageReranker):
 
         self.index = ElasticSearchBM25Retriever.create(self.args.elasticsearch_url, self.args.index_name)
 
+        index_size = self.index.get_document_count()
+        print_rank_0("Index size: {}".format(index_size))
+
         self.dataset = get_openqa_dataset(self.args.task_name,
                                           self.args.retriever_topk_passages_path,
                                           sample_rate=self.args.sample_rate)
@@ -416,6 +422,9 @@ class BGEReranker(UnsupervisedPassageReranker):
 
         self.index = ElasticSearchBM25Retriever.create(self.args.elasticsearch_url, self.args.index_name)
 
+        index_size = self.index.get_document_count()
+        print_rank_0("Index size: {}".format(index_size))
+
         self.dataset = get_openqa_dataset(self.args.task_name,
                                           self.args.retriever_topk_passages_path,
                                           sample_rate=self.args.sample_rate)
@@ -466,11 +475,16 @@ class BGEReranker(UnsupervisedPassageReranker):
                 inputs = self.tokenizer(pairs, padding=True, truncation=True, return_tensors='pt', max_length=512)
                 inputs = inputs.to(self.model.device)
                 scores = self.model(**inputs, return_dict=True).logits.view(-1, ).float()
+                # print(scores)
+
             ranked_scores = scores.tolist()
 
             indexes = numpy.argsort(ranked_scores)
+
             indexes = indexes[::-1].copy()
+            ranked_scores = numpy.array(ranked_scores)[indexes]
             topk_scores = torch.FloatTensor(ranked_scores)
+            # print(topk_scores)
 
             ranked_answers = torch.BoolTensor(has_answer_list)[indexes]
 
@@ -538,6 +552,9 @@ class RankGPTReranker(UnsupervisedPassageReranker):
         self.step_size = self.args.rankgpt_step_size
 
         self.index = ElasticSearchBM25Retriever.create(self.args.elasticsearch_url, self.args.index_name)
+
+        index_size = self.index.get_document_count()
+        print_rank_0("Index size: {}".format(index_size))
 
         self.dataset = get_openqa_dataset(self.args.task_name,
                                           self.args.retriever_topk_passages_path,

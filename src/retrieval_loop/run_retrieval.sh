@@ -9,7 +9,7 @@ do
   for DATA_NAME in "${DATA_NAMES[@]}"
   do
     echo "Running retrieval for ${MODEL_NAME} on ${DATA_NAME}..."
-    CONFIG_PATH="ret_configs/${MODEL_NAME}-config-${DATA_NAME}.json"
+    CONFIG_PATH="retrieve_configs/${MODEL_NAME}-config-${DATA_NAME}.json"
     LOG_DIR="logs/${MODEL_NAME}_${DATA_NAME}_retrieval_async.log"
 
     python retrieve_methods.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &
