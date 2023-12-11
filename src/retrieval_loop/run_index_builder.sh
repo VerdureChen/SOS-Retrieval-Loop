@@ -2,7 +2,7 @@
 
 #sleep 6h
 
-MODEL_NAMES=(all-mpnet bge-large) # dpr contriever) # retromae all-mpnet bge llm-embedder bm25 contriever dpr)
+MODEL_NAMES=(bm25) # dpr contriever) # retromae all-mpnet bge-large llm-embedder bm25 contriever dpr)
 DATA_NAMES=(psgs_w100)
 
 for MODEL_NAME in "${MODEL_NAMES[@]}"

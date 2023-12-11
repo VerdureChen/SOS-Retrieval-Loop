@@ -23,7 +23,7 @@ def evaluate(predictions):
         return white_space_fix(remove_articles(remove_punc(lower(s))))
 
     def exact_match_score(example):
-        ground_truths = example['answer']
+        ground_truths = example['answers']
         assert type(ground_truths) == list, f'ground_truths is not a list, id:{example["id"]}, ground_truth:{ground_truths}'
         prediction = example['response']
         example['exact_match'] = 0
@@ -42,7 +42,7 @@ def evaluate(predictions):
 
 def main():
     # load the predictions
-    res_file_path = '../../data_v2/zero_gen_data/DPR'
+    res_file_path = '../../data_v2/zero_gen_data/DPR/sampled_data'
     data_names = ['nq', 'webq', 'tqa', 'pop']
     model_names = ['chatglm3-6b-chat', 'qwen-14b-chat', 'baichuan2-13b-chat', 'llama2-13b-chat', 'gpt-3.5-turbo']
     for data_name in data_names:

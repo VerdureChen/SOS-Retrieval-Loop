@@ -29,9 +29,9 @@ def get_args():
 
     group.add_argument('--data_name', type=str, required=True, help='data name')
 
-    group.add_argument('--loop', type=int, required=True, help='loop number')
+    group.add_argument('--loop', type=int, default=0, help='loop number')
 
-    group.add_argument('--total_config', type=str, required=True, help='total config file')
+    group.add_argument('--total_config', type=str, default=None, help='total config file')
 
     # Accept a JSON string from the command line to override config settings
     group.add_argument('--overrides', type=str, help='JSON string to override config values')
@@ -69,14 +69,14 @@ def get_template_path(stage_name, method_name, data_name):
 def rewrite_config(stage_name, method_name, data_name, loop, output_dir, total_config, overrides):
     template_path = get_template_path(stage_name, method_name, data_name)
     config = read_config(template_path)
+    if total_config is not None:
+        running_config = read_config(total_config)[stage_name]
 
-    running_config = read_config(total_config)[stage_name]
-
-    # for any key in config_template, if it is in running_config, use the value in running_config
-    # otherwise, use the value in config_template
-    for key in config:
-        if key in running_config:
-            config[key] = running_config[key]
+        # for any key in config_template, if it is in running_config, use the value in running_config
+        # otherwise, use the value in config_template
+        for key in config:
+            if key in running_config:
+                config[key] = running_config[key]
 
 
     # if overrides is not None:

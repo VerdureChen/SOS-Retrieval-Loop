@@ -3,7 +3,14 @@
       "index_name": "contriever_faiss_index",
       "index_path": "../../data_v2/indexes",
       "normalize_embeddings": false,
-      "query_files": ["../../data_v2/input_data/DPR/nq-test.jsonl"],
+      "query_files": ["../../data_v2/input_data/DPR/sampled_query/nq-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/webq-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/pop-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/tqa-test-sample-200.jsonl"],
       "query_page_content_column": "question",
-      "output_files": ["../../data_v2/ret_output/DPR/nq-test-contriever"]
+      "output_files": ["../../data_v2/loop_output/DPR/original_retrieval_result/nq/nq-test-contriever",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/webq/webq-test-contriever",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/pop/pop-test-contriever",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/tqa/tqa-test-contriever"],
+      "elasticsearch_url": "http://124.16.138.142:9978"
     }

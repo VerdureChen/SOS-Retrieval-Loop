@@ -1,0 +1,18 @@
+{
+  "method": "rankgpt",
+  "num_workers": 2,
+  "log_interval": 1,
+  "topk_passages": 100,
+  "rankgpt_llm_model_name": "gpt-3.5-turbo",
+  "rankgpt_prompter_name": "LLMreranker",
+  "rankgpt_rank_end": 30,
+  "rankgpt_window_size": 20,
+  "rankgpt_step_size": 10,
+  "report_topk_accuracies": [1, 5, 20, 100],
+  "merge_shards_and_save": true,
+  "special_suffix": "pop-rankgpt-test-plm-gpt_3.5_turbo-topk-100-h10-bge-large",
+  "index_name": "bm25_psgs_index",
+  "elasticsearch_url": "http://124.16.138.142:9978",
+  "retriever_topk_passages_path": "../../data_v2/ret_output/DPR/pop-test-h10-bge-large.json",
+  "reranker_output_dir": "../../data_v2/ret_output/DPR"
+}

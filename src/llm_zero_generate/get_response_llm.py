@@ -9,6 +9,7 @@ import datasets
 import sys
 sys.path.append('../retrieval_loop')
 from elastic_bm25_search_with_metadata import ElasticSearchBM25Retriever
+from eva_generate import evaluate
 
 Mode = {
     "Zero-shot": 0,
@@ -229,7 +230,7 @@ if __name__ == '__main__':
             print(f"Shard index: {shard_names.index(shard_name)}")
             print('-' * 50)
             shard_dataset = question_dataset.shard(num_shards, index=shard_names.index(shard_name))
-            shard_dataset = shard_dataset.map(get_response, num_proc=4, fn_kwargs=map_fn_kwargs)
+            shard_dataset = shard_dataset.map(get_response, num_proc=8, fn_kwargs=map_fn_kwargs)
             # only keep 'id', 'question', 'answers', 'response'
             shard_dataset = shard_dataset.select_columns(['id', 'question', 'answers', 'response'])
             shard_dataset.to_json(shard_name, force_ascii=False)
@@ -250,6 +251,20 @@ if __name__ == '__main__':
 
     # 删除这个新字段
     combined_dataset = combined_dataset.remove_columns(["id_int"])
+
+    # evaluate
+    print('-' * 50)
+    print("Evaluating")
+    print('-' * 50)
+    prediction = evaluate(combined_dataset)
+    EM = sum(prediction['exact_match']) / len(prediction['exact_match'])
+    print(f"EM:{EM}")
+
+    #write metrics to file
+    metrics_file_path = os.path.join(os.path.dirname(output_file_path), f"rag_metrics.json")
+    with open(metrics_file_path, "a") as f:
+        f.write(f"{output_file_path}: {EM}\n")
+
 
     combined_dataset.to_json(output_file_path, force_ascii=False)
 

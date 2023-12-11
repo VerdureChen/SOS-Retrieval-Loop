@@ -47,7 +47,7 @@ def load_retrieval_embeddings(retrieval_model, normalize_embeddings=False):
 
 
 def Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_files):
+              output_files, elasticsearch_url):
 
 
     # map retrieval model names: DPR, Contriever, RetroMAE, all-mpnet, BGE, LLM-Embedder
@@ -95,7 +95,7 @@ def Retrieval(query_files, page_content_column, retrieval_model, index_name, ind
         index_size = len(index.docstore._dict)
     else:
         print('Please make sure you have started elastic search server')
-        elasticsearch_url = "http://0.0.0.0:9978"
+        # elasticsearch_url = "http://0.0.0.0:9978"
         index = ElasticSearchBM25Retriever.create(elasticsearch_url, index_name)
         index_size = index.get_document_count()
 
@@ -178,6 +178,7 @@ if __name__ == '__main__':
     index_path = config["index_path"]
     normalize_embeddings = config["normalize_embeddings"]
     output_files = config["output_files"]
+    elasticsearch_url = config["elasticsearch_url"]
 
     Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_files)
+              output_files, elasticsearch_url)

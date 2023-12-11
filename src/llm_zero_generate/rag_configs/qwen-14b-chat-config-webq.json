@@ -1,0 +1,9 @@
+{
+  "model_name": "Qwen",
+  "question_file_path": "../../data_v2/input_data/DPR/webq-test.jsonl",
+  "output_file_path": "../../data_v2/zero_gen_data/DPR/webq-test-gen-gpt-3.5-turbo.jsonl",
+  "with_context": true,
+  "elasticsearch_url": "http://124.16.138.142:9978",
+  "index_name": "bm25_psgs_index",
+  "context_ref_num": 5
+}

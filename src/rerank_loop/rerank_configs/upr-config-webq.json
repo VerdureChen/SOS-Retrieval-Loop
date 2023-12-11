@@ -1,0 +1,16 @@
+{
+  "num_workers": 2,
+  "log_interval": 1,
+  "topk_passages": 100,
+  "shard_size": 32,
+  "hf_model_name": "../../ret_model/T0_3B",
+  "use_gpu": true,
+  "use_bf16": true,
+  "report_topk_accuracies": [1, 5, 20, 100],
+  "merge_shards_and_save": true,
+  "special_suffix": "webq-upr-test-plm-T0_3B-topk-100-bm25",
+  "index_name": "bm25_psgs_index",
+  "elasticsearch_url": "http://124.16.138.142:9978",
+  "retriever_topk_passages_path": "../../data_v2/ret_output/DPR/webq-test-bm25-async.json",
+  "reranker_output_dir": "../../data_v2/ret_output/DPR"
+}

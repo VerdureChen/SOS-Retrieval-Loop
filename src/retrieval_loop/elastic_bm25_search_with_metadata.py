@@ -60,8 +60,8 @@ class ElasticSearchBM25Retriever(BaseRetriever):
         """
         from elasticsearch import Elasticsearch
 
-        # Create an Elasticsearch client instance
-        es = Elasticsearch(elasticsearch_url)
+        # Create an Elasticsearch client instance, timeout 30min
+        es = Elasticsearch(elasticsearch_url, timeout=18000)
         if es.indices.exists(index=index_name):
             # print the index settings
             if verbose:

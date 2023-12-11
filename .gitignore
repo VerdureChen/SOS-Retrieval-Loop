@@ -8,7 +8,8 @@ zero_gen_data/
 incxt_gen_data/
 post_processed_data/
 test_output/
-
+tmp/
+loop_output/
 elasticsearch-8.11.1/
 flash-attention/
 llama-2-13b-chat-hf/
@@ -46,6 +47,7 @@ api-for-open-llm-qwen
 *.rar
 *.tar
 *.zip
+*.out
 
 # Logs and databases #
 ######################

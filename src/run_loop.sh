@@ -14,11 +14,11 @@ GENERATE_MODEL_NAMES=(gpt-3.5-turbo) #running: pop trivia finished: nq wq
 #创建目录
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 RUN_DIR=$(pwd)
-LOOP_CONFIG_PATH_NAME="${RUN_DIR}/run_configs/loop_config_${TIMESTAMP}"
+LOOP_CONFIG_PATH_NAME="${RUN_DIR}/run_configs/${QUERY_DATA_NAME}_loop_config_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $LOOP_CONFIG_PATH_NAME
-TOTAL_LOG_DIR="${RUN_DIR}/run_logs/loop_log_${TIMESTAMP}"
+TOTAL_LOG_DIR="${RUN_DIR}/run_logs/${QUERY_DATA_NAME}_loop_log_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $TOTAL_LOG_DIR
-OUTPUT_DIR="${RUN_DIR}/../data_v2/test_output/DPR/loop_output_${TIMESTAMP}"
+OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/${QUERY_DATA_NAME}_loop_output_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $OUTPUT_DIR
 
 #write your config in total_config.json

@@ -3,13 +3,14 @@
       "index_name": "bge-large_faiss_index",
       "index_path": "../../data_v2/indexes",
       "normalize_embeddings": true,
-      "query_files": ["../../data_v2/input_data/DPR/nq-test.jsonl",
-                     "../../data_v2/input_data/DPR/webq-test.jsonl",
-                     "../../data_v2/input_data/DPR/pop-test.jsonl",
-                     "../../data_v2/input_data/DPR/tqa-test.jsonl"],
+      "query_files": ["../../data_v2/input_data/DPR/sampled_query/nq-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/webq-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/pop-test-sample-200.jsonl",
+                     "../../data_v2/input_data/DPR/sampled_query/tqa-test-sample-200.jsonl"],
       "query_page_content_column": "question",
-      "output_files": ["../../data_v2/ret_output/DPR/nq-test-bge-large",
-                      "../../data_v2/ret_output/DPR/webq-test-bge-large",
-                      "../../data_v2/ret_output/DPR/pop-test-bge-large",
-                      "../../data_v2/ret_output/DPR/tqa-test-bge-large"]
+      "output_files": ["../../data_v2/loop_output/DPR/original_retrieval_result/nq/nq-test-bge-large",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/webq/webq-test-bge-large",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/pop/pop-test-bge-large",
+                      "../../data_v2/loop_output/DPR/original_retrieval_result/tqa/tqa-test-bge-large"
+                      ]
 }

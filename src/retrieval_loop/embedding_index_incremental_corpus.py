@@ -49,7 +49,7 @@ def load_retrieval_embeddings(retrieval_model, normalize_embeddings=False):
     return embeddings
 
 
-def main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path):
+def main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path, elasticsearch_url):
 
     # load the new text file
     loader = HuggingFaceDatasetLoader('json', data_files=new_text_file,
@@ -86,7 +86,7 @@ def main(new_text_file, page_content_column, retrieval_model, index_name, index_
         print(f'loaded retrieval embeddings: {retrieval_model}')
     else:
         print('Please make sure you have started elastic search server')
-        elasticsearch_url = "http://0.0.0.0:9978"
+        # elasticsearch_url = "http://0.0.0.0:9978"
 
     # process the new text adding instruction
     if instruction != '':
@@ -162,6 +162,7 @@ if __name__ == '__main__':
     index_name = config["index_name"]
     index_path = config["index_path"]
     index_exists = config["index_exists"]
+    elasticsearch_url = config["elasticsearch_url"]
     index_log_path = os.path.join(config["index_add_path"], 'index_add_logs')
     if not os.path.exists(index_log_path):
         os.makedirs(index_log_path)
@@ -204,7 +205,7 @@ if __name__ == '__main__':
             index_exists = True
         new_text_file = new_text_file_list[i]
         print(f'processing file: {new_text_file}')
-        main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path)
+        main(new_text_file, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings, index_exists, index_log_path, elasticsearch_url)
 
     #remove the split files
     for i in range(file_count):
@@ -222,5 +223,5 @@ if __name__ == '__main__':
     # load the test query file
 
     Retrieval(query_files, page_content_column, retrieval_model, index_name, index_path, normalize_embeddings,
-              output_files)
+              output_files, elasticsearch_url)
 
