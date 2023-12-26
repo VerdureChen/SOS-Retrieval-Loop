@@ -4,6 +4,7 @@ MODEL_NAMES=(chatglm3-6b-chat baichuan2-13b-chat qwen-14b-chat llama2-13b-chat g
 QUERY_DATA_NAMES=(nq pop tqa webq)
 LOOP_NUM=0
 LOOP_CONFIG_PATH_NAME="../run_configs/zero-shot_retrieval_config"
+FROM_METHOD="zero-shot"
 
 TOTAL_LOG_DIR="../run_logs/zero-shot_retrieval_log"
 TOTAL_OUTPUT_DIR="../../data_v2/zero_gen_data/DPR/post_processed_sampled_data"
@@ -29,7 +30,7 @@ do
                             --loop "${LOOP_NUM}" \
                             --stage "post_process" \
                             --output_dir "${CONFIG_PATH}" \
-                            --overrides '{"loop_num": "'"${LOOP_NUM}"'", "gen_model_name": "'"${MODEL_NAME}"'", "input_file": "'"${INPUT_FILE_NAME}"'", "output_dir": "'"${POSTPROCESS_OUTPUT_NAME}"'"}'
+                            --overrides '{"loop_num": "'"${LOOP_NUM}"'", "gen_model_name": "'"${MODEL_NAME}"'", "input_file": "'"${INPUT_FILE_NAME}"'", "output_dir": "'"${POSTPROCESS_OUTPUT_NAME}"'", "from_method": "'"${FROM_METHOD}"'"}'
     wait
     echo "Running postprocess for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
     python process_llm_text.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &

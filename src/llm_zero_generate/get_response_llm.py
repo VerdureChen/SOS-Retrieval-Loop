@@ -184,7 +184,7 @@ if __name__ == '__main__':
     with_context = config["with_context"]
     elastic_url = config["elasticsearch_url"]
     index_name = config["index_name"]
-    context_ref_num = config["context_ref_num"]
+    context_ref_num = int(config["context_ref_num"])
     print(config)
     # config_file:
     # {
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     if num_shards == 0:
         num_shards = 1
 
-    shard_names = [f"{output_file_path[:-6]}_shard_{i}.json" for i in range(num_shards)]
+    shard_names = [f"{output_file_path}_shard_{i}.json" for i in range(num_shards)]
     existing_shards = [shard_name for shard_name in shard_names if os.path.exists(shard_name)]
     print(f"Existing shards: {existing_shards}")
     print(f"Shard names: {shard_names}")
@@ -261,9 +261,9 @@ if __name__ == '__main__':
     print(f"EM:{EM}")
 
     #write metrics to file
-    metrics_file_path = os.path.join(os.path.dirname(output_file_path), f"rag_metrics.json")
+    metrics_file_path = os.path.join(os.path.dirname(output_file_path), f"{model_name}_rag_metrics.json")
     with open(metrics_file_path, "a") as f:
-        f.write(f"{output_file_path}: {EM}\n")
+        f.write(f"{output_file_path}_{context_ref_num}: {EM}\n")
 
 
     combined_dataset.to_json(output_file_path, force_ascii=False)

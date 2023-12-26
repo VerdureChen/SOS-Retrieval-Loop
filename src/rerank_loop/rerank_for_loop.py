@@ -21,7 +21,7 @@ from utils.openqa_dataset import get_openqa_dataset, get_one_epoch_dataloader
 from utils.initialize import initialize_distributed
 from elastic_bm25_search_with_metadata import ElasticSearchBM25Retriever
 from evaluate_dpr_retrieval import evaluate_retrieval
-from monot5_support import MonoT5, Reranker, Query, Text
+from monot5_support import MonoT5, Reranker, Query, Text, T5BatchTokenizer
 from rankgpt_support import get_openai_api, sliding_windows
 import logging
 
@@ -300,8 +300,12 @@ class MonoT5Reranker(UnsupervisedPassageReranker):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = T5ForConditionalGeneration.from_pretrained(self.args.hf_model_name,
                                                             torch_dtype=torch.bfloat16 if self.args.use_bf16 else torch.float32)
+        tokenizer = T5BatchTokenizer(
+            AutoTokenizer.from_pretrained(self.args.hf_model_name, use_fast=False),
+            batch_size=8
+        )
         model = model.to(device)
-        self.model = MonoT5(model=model)
+        self.model = MonoT5(model=model, tokenizer=tokenizer)
 
         print_rank_0("Loaded {} weights".format(self.args.hf_model_name))
 

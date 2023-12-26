@@ -166,7 +166,8 @@ def Retrieval(query_files, page_content_column, retrieval_model, index_name, ind
             json.dump(retrieval, open(output_file_json, 'w', encoding='utf-8'), indent=4, ensure_ascii=False)
 
         # evaluate
-        evaluate_retrieval(output_file_json, [20, 100], False)
+        print(f'evaluating {query_file} ...')
+        evaluate_retrieval(output_file_json, [5, 20, 100], False)
 
 
 if __name__ == '__main__':

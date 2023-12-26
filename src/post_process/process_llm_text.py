@@ -25,12 +25,13 @@ def read_input_dataset(input_file):
     return input_dataset
 
 
-def process_dataset(input_dataset, output_dir, loop_num, gen_model_name, query_set_name):
+def process_dataset(input_dataset, output_dir, loop_num, gen_model_name, query_set_name, from_method):
     # map the input dataset to the output dataset
     func_args = {
         'loop_num': loop_num,
         'gen_model_name': gen_model_name,
-        'query_set_name': query_set_name
+        'query_set_name': query_set_name,
+        'from_method': from_method
     }
     output_dataset = input_dataset.map(process_example, fn_kwargs=func_args)
     # save the output dataset
@@ -52,7 +53,7 @@ def filter_response(response):
         "I'd be happy to help answer your question.",
         "Sure thing!",
         "Certainly!",
-
+        "Based on the provided context information,"
         ]
 
     filter_the_chunk_if_starts_with = [
@@ -66,6 +67,8 @@ def filter_response(response):
         "According to my knowledge,",
         "As of my knowledge cutoff date in [[训练时间]],",
         "According to the latest data available,",
+        "Based on the provided context information,",
+        "Based on the context information provided,"
         ]
 
     filter_the_sentence_if_starts_with = [
@@ -87,6 +90,9 @@ def filter_response(response):
         "I apologize",
         "As an AI language model,",
         "Sorry",
+        "Here's my answer",
+        "here's the answer",
+        "here is a 100-word"
         ]
 
 
@@ -121,11 +127,11 @@ def filter_response(response):
 
 
 
-def process_example(example, loop_num, gen_model_name, query_set_name):
+def process_example(example, loop_num, gen_model_name, query_set_name, from_method):
     # assign new id
     # get a timestamp, format: 20210801120000
     timestamp = time.strftime('%Y%m%d%H%M%S', time.localtime())
-    example['id'] = f'{gen_model_name}_{query_set_name}_loop{loop_num}_{example["id"]}_{timestamp}'
+    example['id'] = f'{gen_model_name}_{query_set_name}_from_{from_method}_loop{loop_num}_{example["id"]}_{timestamp}'
     # filter the response
     example['response'] = filter_response(example['response'])
     return example
@@ -139,6 +145,7 @@ def get_args():
     parser.add_argument('--loop_num', type=int, default=0)
     parser.add_argument('--gen_model_name', type=str, default='gpt-3.5-turbo')
     parser.add_argument('--query_set_name', type=str, default='nq')
+    parser.add_argument('--from_method', type=str, default='zreo-shot')
     args = parser.parse_args()
     # 读取 JSON 配置文件
     # json:
@@ -183,7 +190,7 @@ def main():
     # read the input dataset
     input_dataset = read_input_dataset(args.input_file)
     # process the input dataset
-    process_dataset(input_dataset, args.output_dir, args.loop_num, args.gen_model_name, args.query_set_name)
+    process_dataset(input_dataset, args.output_dir, args.loop_num, args.gen_model_name, args.query_set_name, args.from_method)
 
 
 if __name__ == '__main__':

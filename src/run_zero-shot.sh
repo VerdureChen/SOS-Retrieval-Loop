@@ -17,16 +17,16 @@ mkdir -p "${CONFIG_PATH}"
 PORT=29500
 WORLD_SIZE=1
 run_items=(
-  "item1 bm25 None"
-  "item2 contriever None"
-  "item3 bge-base None"
-  "item4 llm-embedder None"
-  "item5 bm25 bge"
+#  "item1 bm25 None"
+#  "item2 contriever None"
+#  "item3 bge-base None"
+#  "item4 llm-embedder None"
+#  "item5 bm25 bge"
   "item6 bm25 monot5"
-  "item7 bm25 upr"
-  "item8 bge-base bge"
+#  "item7 bm25 upr"
+#  "item8 bge-base bge"
   "item9 bge-base monot5"
-  "item10 bge-base upr"
+#  "item10 bge-base upr"
 )
 GENERATE_MODEL_NAMES=(baichuan2-13b-chat qwen-14b-chat gpt-3.5-turbo llama2-13b-chat chatglm3-6b) #running: pop trivia finished: nq wq
 # 新建一个空数组用于存储去重后的检索方法名称
@@ -68,26 +68,26 @@ done
 
 
 # merge all files in NEW_FILE_PATH into one
-#cat ${NEW_FILE_PATH}/*.jsonl > ${NEW_FILE_PATH}/merged_file/merged.jsonl
-#NEW_FILE_ADDR="${NEW_FILE_PATH}/merged_file/merged.jsonl"
+cat ${NEW_FILE_PATH}/*.jsonl > ${NEW_FILE_PATH}/merged_file/merged.jsonl
+NEW_FILE_ADDR="${NEW_FILE_PATH}/merged_file/merged.jsonl"
 # reindex
 cd retrieval_loop
-#for retrieval_method in "${uniq_retrieval_methods[@]}"; do
-#  # create log dir
-#  LOG_DIR="${LOG_PATH}/${retrieval_method}_add_index.log"
-##  mkdir -p "${LOG_DIR}"
-#  # create config dir
-#  CONFIG_DIR="${CONFIG_PATH}/${retrieval_method}_add_index.json"
-#  echo "reindexing ${retrieval_method}..."
-#  python ../rewrite_configs.py --method "${retrieval_method}" \
-#                              --data_name "${CORPUS_NAME}" \
-#                              --stage "indexing" \
-#                              --output_dir "${CONFIG_DIR}" \
-#                              --overrides '{"index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${LOG_PATH}"'"}'
-#  wait
-#  echo "Running ${retrieval_method} indexing..."
-#  python embedding_index_incremental_corpus.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
-#done
+for retrieval_method in "${uniq_retrieval_methods[@]}"; do
+  # create log dir
+  LOG_DIR="${LOG_PATH}/${retrieval_method}_add_index.log"
+#  mkdir -p "${LOG_DIR}"
+  # create config dir
+  CONFIG_DIR="${CONFIG_PATH}/${retrieval_method}_add_index.json"
+  echo "reindexing ${retrieval_method}..."
+  python ../rewrite_configs.py --method "${retrieval_method}" \
+                              --data_name "${CORPUS_NAME}" \
+                              --stage "indexing" \
+                              --output_dir "${CONFIG_DIR}" \
+                              --overrides '{"index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${LOG_PATH}"'"}'
+  wait
+  echo "Running ${retrieval_method} indexing..."
+  python embedding_index_incremental_corpus.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+done
 
 for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
   # Initialize empty strings for file lists
@@ -111,9 +111,9 @@ for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
       OUTPUT_FILE_LIST="${OUTPUT_FILE_LIST},\"${OUTPUT_FILE_PATH}\""
     fi
   done
-
-
-
+#
+#
+#
   echo "rewrite config file for ${RETRIEVAL_MODEL_NAME}"
   CONFIG_DIR="${CONFIG_PATH}/${RETRIEVAL_MODEL_NAME}_retrieval.json"
   LOG_DIR="${LOG_PATH}/${RETRIEVAL_MODEL_NAME}_retrieval.log"
@@ -128,8 +128,8 @@ for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
   python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
   wait
 done
-
-wait
+#
+#wait
 
 
 
@@ -185,30 +185,30 @@ done
 
 
 
-#cd ../llm_zero_generate
-#
-#QUESTION_FILE_NAMES=()
-#for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
-#  QUESTION_FILE_NAME="-test-${RETRIEVAL_MODEL_NAME}"
-#  QUESTION_FILE_NAMES+=("${QUESTION_FILE_NAME}")
-#done
-#for item in "${run_items[@]}"; do
-#    # 使用空格分割item的值
-#    IFS=' ' read -r -a tuple <<< "$item"
-#
-#    # 获取retrieval方法和rerank方法
-#    RETRIEVAL_MODEL_NAME="${tuple[1]}"
-#    RERANK_MODEL_NAME="${tuple[2]}"
-#    if [ "$RERANK_MODEL_NAME" = "None" ]; then
-#      continue
-#    fi
-#    QUESTION_FILE_NAME="-${RERANK_MODEL_NAME}_rerank_based_on_${RETRIEVAL_MODEL_NAME}.json"
-#    QUESTION_FILE_NAMES+=("${QUESTION_FILE_NAME}")
-#done
-#echo "QUESTION_FILE_NAMES:"
-#for QUESTION_FILE_NAME in "${QUESTION_FILE_NAMES[@]}"; do
-#  echo "$QUESTION_FILE_NAME"
-#done
+cd ../llm_zero_generate
+
+QUESTION_FILE_NAMES=()
+for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
+  QUESTION_FILE_NAME="-test-${RETRIEVAL_MODEL_NAME}"
+  QUESTION_FILE_NAMES+=("${QUESTION_FILE_NAME}")
+done
+for item in "${run_items[@]}"; do
+    # 使用空格分割item的值
+    IFS=' ' read -r -a tuple <<< "$item"
+
+    # 获取retrieval方法和rerank方法
+    RETRIEVAL_MODEL_NAME="${tuple[1]}"
+    RERANK_MODEL_NAME="${tuple[2]}"
+    if [ "$RERANK_MODEL_NAME" = "None" ]; then
+      continue
+    fi
+    QUESTION_FILE_NAME="-${RERANK_MODEL_NAME}_rerank_based_on_${RETRIEVAL_MODEL_NAME}.json"
+    QUESTION_FILE_NAMES+=("${QUESTION_FILE_NAME}")
+done
+echo "QUESTION_FILE_NAMES:"
+for QUESTION_FILE_NAME in "${QUESTION_FILE_NAMES[@]}"; do
+  echo "$QUESTION_FILE_NAME"
+done
 #
 #
 ##QUESTION_FILE_NAMES=(
@@ -223,34 +223,34 @@ done
 ###  "-upr_rerank_based_on_bge-base.json"
 ###  "-upr_rerank_based_on_bm25.json"
 ##)
-#LOOP_CONFIG_PATH_NAME=$CONFIG_PATH
-#
-#TOTAL_LOG_DIR=$LOG_PATH
-#TOTAL_OUTPUT_DIR=$OUTPUT_DIR
-#mkdir -p "${TOTAL_LOG_DIR}"
-#mkdir -p "${TOTAL_OUTPUT_DIR}"
-#
-#for MODEL_NAME in "${GENARATE_MODEL_NAMES[@]}"
-#do
-#  for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"
-#  do
-#    for QUESTION_FILE_NAME in "${QUESTION_FILE_NAMES[@]}"
-#    do
-#      OUTPUT_DIR="${TOTAL_OUTPUT_DIR}/${QUERY_DATA_NAME}"
-#      QUESTION_FILE_PATH="${OUTPUT_DIR}/${QUERY_DATA_NAME}${QUESTION_FILE_NAME}"
-#      echo "rewrite config file for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
-#      CONFIG_PATH="${LOOP_CONFIG_PATH_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}_generate.json"
-#      LOG_DIR="${TOTAL_LOG_DIR}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}_generate.log"
-#      GENERATE_OUTPUT_NAME="${OUTPUT_DIR}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}"
-#      python ../rewrite_configs.py --method "${MODEL_NAME}" \
-#                              --data_name "${QUERY_DATA_NAME}" \
-#                              --stage "generate" \
-#                              --output_dir "${CONFIG_PATH}" \
-#                              --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'"}'
-#      wait
-#      echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
-##      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
-#      wait
-#  done
-#  done
-#done
+LOOP_CONFIG_PATH_NAME=$CONFIG_PATH
+
+TOTAL_LOG_DIR=$LOG_PATH
+TOTAL_OUTPUT_DIR=$OUTPUT_DIR
+mkdir -p "${TOTAL_LOG_DIR}"
+mkdir -p "${TOTAL_OUTPUT_DIR}"
+
+for MODEL_NAME in "${GENARATE_MODEL_NAMES[@]}"
+do
+  for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"
+  do
+    for QUESTION_FILE_NAME in "${QUESTION_FILE_NAMES[@]}"
+    do
+      OUTPUT_DIR="${TOTAL_OUTPUT_DIR}/${QUERY_DATA_NAME}"
+      QUESTION_FILE_PATH="${OUTPUT_DIR}/${QUERY_DATA_NAME}${QUESTION_FILE_NAME}"
+      echo "rewrite config file for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
+      CONFIG_PATH="${LOOP_CONFIG_PATH_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}_generate.json"
+      LOG_DIR="${TOTAL_LOG_DIR}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}_generate.log"
+      GENERATE_OUTPUT_NAME="${OUTPUT_DIR}/${MODEL_NAME}_${QUERY_DATA_NAME}${QUESTION_FILE_NAME}"
+      python ../rewrite_configs.py --method "${MODEL_NAME}" \
+                              --data_name "${QUERY_DATA_NAME}" \
+                              --stage "generate" \
+                              --output_dir "${CONFIG_PATH}" \
+                              --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'"}'
+      wait
+      echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
+#      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
+      wait
+  done
+  done
+done
