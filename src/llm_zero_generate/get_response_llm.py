@@ -47,8 +47,10 @@ def get_openai_api(model_name):
         openai.api_key = "xxx"
     elif model_name == "gpt-3.5-turbo":
         print("Using gpt-3.5-turbo")
+        # openai.api_base = "https://one-api.ponte.top/v1"
+        # openai.api_key = "sk-9y7d4TtOJO3xzHXn6dCa9fE02d18436d86Be540a00DcD1F8"
         openai.api_base = "http://47.245.109.131:5555/v1"
-        openai.api_key = "sk-Y5UPxxoh10M9h50RBe8e70EfEc484556A80a8717623aEb2f"
+        openai.api_key = "sk-ZW18DSR8JBsNKOg2Af61E55bD23c481dAa916f624e8c9d65"
     else:
         raise ValueError("Model name not supported")
 
@@ -70,7 +72,7 @@ def get_args():
     return config
 
 
-@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, max=10))
+@retry(stop=stop_after_attempt(20), wait=wait_exponential(multiplier=1, max=10))
 def get_response_llm(model_name, text, filter_words=None):
     completion = openai.ChatCompletion.create(
         model=model_name,

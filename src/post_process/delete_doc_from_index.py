@@ -93,14 +93,29 @@ def delete_docs_from_index(id_files, model_name, index_path, index_name, elastic
 
     with open(delete_log_file, 'w') as f:
         f.write(f'index size before: {index_size_before}\n')
+        # wether id_files are directories or files
+        delete_id_files = []
         for id_file in id_files:
+            if os.path.isdir(id_file):
+                for file in os.listdir(id_file):
+                    delete_id_files.append(os.path.join(id_file, file))
+            else:
+                delete_id_files.append(id_file)
+
+        for id_file in delete_id_files:
+            if model_name not in id_file:
+                continue
             ids = read_ids_from_file(id_file)
 
             if model_name == 'bm25':
                 index.delete_documents_by_id(ids)
                 index_size_after = index.get_document_count()
             elif model_name == 'faiss':
-                index.delete(ids)
+                try:
+                    index.delete(ids)
+                except Exception as e:
+                    print(e)
+                    pass
                 index_size_after = len(index.docstore._dict)
             else:
                 raise ValueError(f'Invalid model name: {model_name}')

@@ -23,7 +23,7 @@ def evaluate(predictions):
         return white_space_fix(remove_articles(remove_punc(lower(s))))
 
     def exact_match_score(example):
-        ground_truths = example['answer']
+        ground_truths = example['answers']
         assert type(ground_truths) == list, f'ground_truths is not a list, id:{example["id"]}, ground_truth:{ground_truths}'
         prediction = example['response']
         example['exact_match'] = 0

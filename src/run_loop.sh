@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 RUN_DIR=$(pwd)
-
+elasticsearch_url="http://124.16.138.140:9978"
 #循环次数
 TOTAL_LOOP_NUM=10
 #方法设置
 RETRIEVAL_MODEL_NAME=bm25 # dpr contriever retromae all-mpnet bge-base llm-embedder bm25
-RERANK_MODEL_NAME=None #monot5 upr bge rankgpt
+RERANK_MODEL_NAME=bge #monot5 upr bge rankgpt
 CORPUS_NAME=psgs_w100
 
 #QUERY_DATA_NAME=nq
@@ -14,7 +14,7 @@ CORPUS_NAME=psgs_w100
 
 QUERY_DATA_NAMES=(nq webq pop tqa)
 QUERY_DATA_PATH="${RUN_DIR}/../data_v2/input_data/DPR/sampled_query"
-QUERY_NAME_FORMAT="-test-sample-10.jsonl"
+QUERY_NAME_FORMAT="-test-sample-200.jsonl"
 
 CONTEXT_REF_NUM=5
 GENERATE_MODEL_NAMES=(gpt-3.5-turbo chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat) #running: pop trivia finished: nq wq
@@ -22,6 +22,7 @@ GENERATE_MODEL_NAMES=(gpt-3.5-turbo chatglm3-6b qwen-14b-chat llama2-13b-chat ba
 
 #创建目录
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
+#TIMESTAMP=20231231125441
 # concanate all the query data names
 QUERY_DATA_NAME=$(IFS=_; echo "${QUERY_DATA_NAMES[*]}")
 
@@ -125,9 +126,15 @@ do
                           --loop "${LOOP_NUM}" \
                           --stage "retrieval" \
                           --output_dir "${CONFIG_PATH}" \
-                          --overrides '{"index_name": "'"${RETRIEVAL_MODEL_NAME}_test_index"'", "query_files": ['"${QUERY_FILE_LIST}"'], "output_files": ['"${OUTPUT_FILE_LIST}"'] }'
+                          --overrides '{"query_files": ['"${QUERY_FILE_LIST}"'], "output_files": ['"${OUTPUT_FILE_LIST}"'] , "elasticsearch_url": "'"${elasticsearch_url}"'"}'
   wait
   echo "Running retrieval for ${RETRIEVAL_MODEL_NAME}"
+  # if loop_num is 7, jump the retrieval
+#  if [[ "${LOOP_NUM}" == "7" ]]; then
+#    echo "jump the retrieval for ${RETRIEVAL_MODEL_NAME}"
+#  else
+#    python retrieve_methods.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &
+#  fi
   python retrieve_methods.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &
 
   wait
@@ -155,7 +162,7 @@ do
                             --loop "${LOOP_NUM}" \
                             --stage "rerank" \
                             --output_dir "${CONFIG_PATH}" \
-                            --overrides '{"index_name": "bm25_test_index", "retriever_topk_passages_path": "'"${RETRIEVAL_OUTPUT_PATH}"'", "special_suffix": "'"${RERANK_OUTPUT_NAME}"'", "reranker_output_dir": "'"${OUTPUT_DIR}/${QUERY_DATA_NAME}"'"}'
+                            --overrides '{"retriever_topk_passages_path": "'"${RETRIEVAL_OUTPUT_PATH}"'", "special_suffix": "'"${RERANK_OUTPUT_NAME}"'", "reranker_output_dir": "'"${OUTPUT_DIR}/${QUERY_DATA_NAME}"'", "elasticsearch_url": "'"${elasticsearch_url}"'"}'
 
     wait
     echo "Running rerank for ${RERANK_MODEL_NAME} on ${QUERY_DATA_NAME}..."
@@ -197,11 +204,10 @@ do
                               --loop "${LOOP_NUM}" \
                               --stage "generate" \
                               --output_dir "${CONFIG_PATH}" \
-                              --overrides '{"index_name": "bm25_test_index", "question_file_path": "'"${GENERATE_INPUT_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'","context_ref_num": "'"${CONTEXT_REF_NUM}"'"}'
-      wait
+                              --overrides '{"question_file_path": "'"${GENERATE_INPUT_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'","context_ref_num": "'"${CONTEXT_REF_NUM}"'", "elasticsearch_url": "'"${elasticsearch_url}"'"}'
+#      wait
       echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
       python get_response_llm.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &
-      continue
     done
     wait
 
@@ -216,6 +222,7 @@ do
       mkdir -p $POSTPROCESS_OUTPUT_PATH
       POSTPROCESS_OUTPUT_NAME="${POSTPROCESS_OUTPUT_PATH}/${MODEL_NAME}_${QUERY_DATA_NAME}_postprocess_loop_${LOOP_NUM}_based_on_${RERANK_MODEL_NAME}_${RETRIEVAL_MODEL_NAME}_ref_${CONTEXT_REF_NUM}.jsonl"
       FROM_METHOD="${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}"
+      GENERATE_OUTPUT_NAME="${OUTPUT_DIR}/${QUERY_DATA_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}_generate_based_on_${RERANK_MODEL_NAME}_${RETRIEVAL_MODEL_NAME}_loop_${LOOP_NUM}_ref_${CONTEXT_REF_NUM}.jsonl"
       python ../rewrite_configs.py --total_config "${USER_CONFIG_PATH}" \
                               --method "${MODEL_NAME}" \
                               --data_name "${QUERY_DATA_NAME}" \
@@ -252,7 +259,7 @@ do
                             --loop "${LOOP_NUM}" \
                             --stage "indexing" \
                             --output_dir "${CONFIG_PATH}" \
-                            --overrides '{"index_name": "'"${INDEXING_MODEL_NAME}_test_index"'", "index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${TOTAL_LOG_DIR}"'"}'
+                            --overrides '{ "index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${TOTAL_LOG_DIR}"'","elasticsearch_url": "'"${elasticsearch_url}"'" }'
     wait
     echo "Running ${INDEXING_MODEL_NAME} indexing..."
     python embedding_index_incremental_corpus.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &

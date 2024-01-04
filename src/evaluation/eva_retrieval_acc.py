@@ -268,8 +268,11 @@ def evaluate_retrieval(retrieval_file, topk, regex=False):
         for k in topk:
             accuracy[k].append(0 if has_ans_idx >= k else 1)
 
+    return_dict = {}
     for k in topk:
         print(f'Top{k}\taccuracy: {np.mean(accuracy[k]):.4f}')
+        return_dict[f'{k}'] = np.mean(accuracy[k])
+    return return_dict
 
 
 if __name__ == '__main__':
