@@ -61,6 +61,10 @@ def get_template_path(stage_name, method_name, data_name):
         template_path = f'index_configs/{method_name}-config-{data_name}.json'
     elif stage_name == 'post_process':
         template_path = f'process_configs/template_config.json'
+    elif stage_name == 'filter_bleu':
+        template_path = f'filter_configs/bleu_filter_config.json'
+    elif stage_name == 'filter_source':
+        template_path = f'filter_configs/source_filter_config.json'
     else:
         raise ValueError('stage name error')
     return template_path

@@ -1,4 +1,4 @@
 {
-        "directory": "../../data_v2/loop_output/DPR/nq_webq_pop_tqa_loop_output_bm25_monot5_total_loop_10_20240101125941/webq",
+        "directory": "../../data_v2/loop_output/DPR/nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240113075935/pop",
         "task": "QA"
 }

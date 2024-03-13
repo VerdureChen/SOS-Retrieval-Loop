@@ -1,0 +1,6 @@
+{
+        "model_name": "baichuan2-13b-chat",
+        "question_file_path": "../../data_v2/misinfo_data/DPR/mis_passage/tqa-test-gen-gpt-3.5-turbo-passage.jsonl",
+        "output_file_path": "../../data_v2/misinfo_data/DPR/mis_passage/tqa-test-gen-baichuan-passage.jsonl",
+        "misinfo_type": "mis_passage"
+    }

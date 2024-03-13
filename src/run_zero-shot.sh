@@ -5,27 +5,36 @@ CORPUS_NAME=psgs_w100
 QUERY_DATA_NAMES=(nq pop tqa webq)
 QUERY_DATA_PATH="${RUN_DIR}/../data_v2/input_data/DPR/sampled_query"
 QUERY_NAME_FORMAT="-test-sample-200.jsonl"
-OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/zero-shot_retrieval_result"
+
 for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"; do
     mkdir -p "${OUTPUT_DIR}/${QUERY_DATA_NAME}"
 done
-NEW_FILE_PATH="${RUN_DIR}/../data_v2/zero_gen_data/DPR/post_processed_sampled_data"
-LOG_PATH="${RUN_DIR}/run_logs/zero-shot_retrieval_log"
-CONFIG_PATH="${RUN_DIR}/run_configs/zero-shot_retrieval_config"
+
+OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/misinfo_retrieval_result"
+NEW_FILE_PATH="${RUN_DIR}/../data_v2/misinfo_data/DPR/mis_passage_processed"
+LOG_PATH="${RUN_DIR}/run_logs/misinfo_retrieval_log2"
+CONFIG_PATH="${RUN_DIR}/run_configs/misinfo_retrieval_config2"
+
+#OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/zero-shot_retrieval_result"
+#NEW_FILE_PATH="${RUN_DIR}/../data_v2/zero_gen_data/DPR/post_processed_sampled_data"
+#LOG_PATH="${RUN_DIR}/run_logs/zero-shot_retrieval_log_2"
+#CONFIG_PATH="${RUN_DIR}/run_configs/zero-shot_retrieval_config_2"
+
+elasticsearch_url="http://124.16.138.150:9978"
 mkdir -p "${LOG_PATH}"
 mkdir -p "${CONFIG_PATH}"
 PORT=29500
 WORLD_SIZE=1
 run_items=(
-#  "item1 bm25 None"
+  "item1 bm25 None"
 #  "item2 contriever None"
 #  "item3 bge-base None"
 #  "item4 llm-embedder None"
 #  "item5 bm25 bge"
-  "item6 bm25 monot5"
+#  "item6 bm25 monot5"
 #  "item7 bm25 upr"
 #  "item8 bge-base bge"
-  "item9 bge-base monot5"
+#  "item9 bge-base monot5"
 #  "item10 bge-base upr"
 )
 GENERATE_MODEL_NAMES=(baichuan2-13b-chat qwen-14b-chat gpt-3.5-turbo llama2-13b-chat chatglm3-6b) #running: pop trivia finished: nq wq
@@ -65,7 +74,15 @@ done
 
 
 
+# if merged_file dir not exists, create it
+if [ ! -d "${NEW_FILE_PATH}/merged_file" ]; then
+  mkdir -p "${NEW_FILE_PATH}/merged_file"
+fi
 
+# if merged.jsonl exists, delete it
+if [ -f "${NEW_FILE_PATH}/merged_file/merged.jsonl" ]; then
+  rm "${NEW_FILE_PATH}/merged_file/merged.jsonl"
+fi
 
 # merge all files in NEW_FILE_PATH into one
 cat ${NEW_FILE_PATH}/*.jsonl > ${NEW_FILE_PATH}/merged_file/merged.jsonl
@@ -83,7 +100,7 @@ for retrieval_method in "${uniq_retrieval_methods[@]}"; do
                               --data_name "${CORPUS_NAME}" \
                               --stage "indexing" \
                               --output_dir "${CONFIG_DIR}" \
-                              --overrides '{"index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${LOG_PATH}"'"}'
+                              --overrides '{"index_exists": true, "new_text_file": "'"${NEW_FILE_ADDR}"'", "page_content_column": "response", "index_add_path":"'"${LOG_PATH}"'","elasticsearch_url": "'"${elasticsearch_url}"'"}'
   wait
   echo "Running ${retrieval_method} indexing..."
   python embedding_index_incremental_corpus.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
@@ -125,7 +142,7 @@ for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
                           --overrides '{ "query_files": ['"${QUERY_FILE_LIST}"'], "output_files": ['"${OUTPUT_FILE_LIST}"'] }'
   wait
   echo "Running retrieval for ${RETRIEVAL_MODEL_NAME} on ${QUERY_DATA_NAME}..."
-  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+#  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
   wait
 done
 #
@@ -168,13 +185,13 @@ for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"; do
     wait
     echo "Running rerank for ${RERANK_MODEL_NAME} on ${QUERY_DATA_NAME}..."
     # 运行分布式Python脚本
-    torchrun  --nproc_per_node ${WORLD_SIZE} \
-        --nnodes 1 \
-        --node_rank 0 \
-        --master_addr localhost \
-        --master_port $PORT \
-        rerank_for_loop.py \
-        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+#    torchrun  --nproc_per_node ${WORLD_SIZE} \
+#        --nnodes 1 \
+#        --node_rank 0 \
+#        --master_addr localhost \
+#        --master_port $PORT \
+#        rerank_for_loop.py \
+#        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
     PORT=$((PORT+1))
     # 等待所有进程结束
     wait

@@ -1,8 +1,8 @@
 {
-       "id_files": ["../run_logs/nq_webq_pop_tqa_loop_log_bge-base_upr_total_loop_10_20240102135211/index_add_logs"],
+       "id_files": ["../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_llm-embedder_None_total_loop_10_20240207040512/index_add_logs"],
        "model_name": "bm25",
        "index_path": "../../data_v2/indexes",
        "index_name": "bm25_psgs_index",
-       "elasticsearch_url": "http://124.16.138.147:9978",
-       "delete_log_path": "../run_logs/nq_webq_pop_tqa_loop_log_bge-base_upr_total_loop_10_20240102135211/index_add_logs"
+       "elasticsearch_url": "http://124.16.138.150:9978",
+       "delete_log_path": "../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_llm-embedder_None_total_loop_10_20240207040512/index_add_logs"
 }

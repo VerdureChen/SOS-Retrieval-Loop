@@ -1,10 +1,10 @@
 import openai
 import os
-openai.api_base = "http://124.16.138.144:8222/v1"
-openai.api_key = "xxx"
-
-os.environ["OPENAI_API_BASE"] = "http://124.16.138.144:8222/v1"
-os.environ["OPENAI_API_KEY"] = "xxx"
+# openai.api_base = "http://124.16.138.150:8223/v1"
+# openai.api_key = "xxx"
+#
+# os.environ["OPENAI_API_BASE"] = "http://124.16.138.150:8223/v1"
+# os.environ["OPENAI_API_KEY"] = "xxx"
 
 
 from langchain.chat_models import ChatOpenAI
@@ -31,9 +31,11 @@ for question in questions:
                         f"\n\n Question:{question} \n\n Background Document:"},
         ],
         stream=False,
-        max_tokens=128,
+        max_tokens=20,
         temperature=0.7,
-        stop=["Sure"]
+        # stop=["Sure"],
+        logprobs=True,
+        top_logprobs=3,
     )
 
     while len(completion.choices[0].message.content.strip().split(" ")) < 10:
@@ -45,12 +47,14 @@ for question in questions:
                             f"\n\n Question:{question} \n\n Background Document:"},
             ],
             stream=False,
-            max_tokens=128,
+            max_tokens=20,
             temperature=0.7,
-            stop=["Sure"]
+            # stop=["Sure"],
+            logprobs=True,
+            top_logprobs=3,
         )
 
-    print(completion.choices[0].message.content)
+    print(completion)
     print('\n\n')
 
     # openai.Completion.create(prompt=f"Provide a background document in 100 words according to your knowledge to answer the given question." \

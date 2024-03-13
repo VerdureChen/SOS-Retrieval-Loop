@@ -98,7 +98,8 @@ def delete_docs_from_index(id_files, model_name, index_path, index_name, elastic
         for id_file in id_files:
             if os.path.isdir(id_file):
                 for file in os.listdir(id_file):
-                    delete_id_files.append(os.path.join(id_file, file))
+                    if file.startswith(index_name):
+                        delete_id_files.append(os.path.join(id_file, file))
             else:
                 delete_id_files.append(id_file)
 

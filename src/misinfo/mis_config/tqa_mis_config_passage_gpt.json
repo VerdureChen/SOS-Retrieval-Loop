@@ -1,0 +1,6 @@
+{
+        "model_name": "gpt-3.5-turbo",
+        "question_file_path": "../../data_v2/misinfo_data/DPR/mis_answer/tqa-test-gen-gpt-3.5-turbo-answer.jsonl",
+        "output_file_path": "../../data_v2/misinfo_data/DPR/mis_passage/tqa-test-gen-gpt-3.5-turbo-passage.jsonl",
+        "misinfo_type": "mis_passage"
+    }

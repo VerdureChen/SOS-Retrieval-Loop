@@ -1,0 +1,9 @@
+{
+        "input_file": "../../data_v2/loop_output/DPR/nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240116050642/nq/llm-embedder_nq_retrieval_loop_10",
+        "output_file": "llm-embedder_nq_retrieval_loop_10_filtered",
+        "elasticsearch_url": "http://124.16.138.150:9978",
+        "index_name": "bm25_psgs_index",
+        "max_self_bleu": 0.4,
+        "num_docs": 5,
+        "task": "filter_source"
+    }

@@ -27,5 +27,13 @@
   },
   "post_process": {
       "query_set_name": "nq"
+  },
+  "filter_bleu": {
+        "max_self_bleu": 0.4,
+        "num_docs": 5
+  },
+  "filter_source": {
+        "max_self_bleu": 0.4,
+        "num_docs": 5
   }
     }

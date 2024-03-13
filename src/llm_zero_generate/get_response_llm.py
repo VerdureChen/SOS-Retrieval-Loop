@@ -31,26 +31,26 @@ Prompt = {
 def get_openai_api(model_name):
     if model_name == "Qwen":
         print("Using Qwen")
-        openai.api_base = "http://0.0.0.0:8111/v1"
+        openai.api_base = "http://124.16.138.150:8111/v1"
         openai.api_key = "xxx"
     elif model_name == "Llama":
         print("Using Llama")
-        openai.api_base = "http://0.0.0.0:8223/v1"
+        openai.api_base = "http://124.16.138.150:8223/v1"
         openai.api_key = "xxx"
     elif model_name == "chatglm3":
         print("Using chatglm3")
-        openai.api_base = "http://0.0.0.0:8113/v1"
+        openai.api_base = "http://124.16.138.150:8113/v1"
         openai.api_key = "xxx"
     elif model_name == "baichuan2-13b-chat":
         print("Using baichuan2-13b-chat")
-        openai.api_base = "http://0.0.0.0:8222/v1"
+        openai.api_base = "http://124.16.138.150:8222/v1"
         openai.api_key = "xxx"
     elif model_name == "gpt-3.5-turbo":
         print("Using gpt-3.5-turbo")
         # openai.api_base = "https://one-api.ponte.top/v1"
         # openai.api_key = "sk-9y7d4TtOJO3xzHXn6dCa9fE02d18436d86Be540a00DcD1F8"
         openai.api_base = "http://47.245.109.131:5555/v1"
-        openai.api_key = "sk-ZW18DSR8JBsNKOg2Af61E55bD23c481dAa916f624e8c9d65"
+        openai.api_key = "sk-fLDpN1V5oOBlNK4E78716cB2B8D44bC5Af30C80b5bFaBb88"
     else:
         raise ValueError("Model name not supported")
 
@@ -101,6 +101,9 @@ def get_response_llm(model_name, text, filter_words=None):
 
 
 def prepare_input(question, context, index, mode, context_ref_num=0):
+    # print(f'zero-shot:{Mode["Zero-shot"]}')
+    # print(f'with-context:{Mode["With-context"]}')
+    # print(f'mode:{mode}')
     if mode == Mode["Zero-shot"]:
         prompt = Prompt["Zero-shot"]
         prompt = prompt.format(question=question)
@@ -146,7 +149,19 @@ def read_dataset(question_file_path, with_context):
     else:
         print("Not using context")
         Mode["Zero-shot"] = 1
-        question_dataset = datasets.load_dataset("json", data_files=question_file_path)["train"]
+        with open(question_file_path, "r", encoding='utf-8') as f:
+            question_dataset = json.load(f)
+        formatted_data = [
+            {
+                "id": qid,
+                "question": details["question"],
+                "answers": details["answers"],
+                "contexts": details["contexts"],
+            }
+            for qid, details in question_dataset.items()
+        ]
+        question_dataset = datasets.Dataset.from_list(formatted_data)
+        # question_dataset = datasets.load_dataset("json", data_files=question_file_path)["train"]
 
 
     return question_dataset
@@ -201,10 +216,12 @@ if __name__ == '__main__':
 
     # set openai api
     get_openai_api(model_name)
+    if model_name == "gpt-3.5-turbo":
+        model_name = "gpt-3.5-turbo-0613"
     # read dataset
     question_dataset = read_dataset(question_file_path, with_context)
     # set kwargs
-    map_fn_kwargs = {"with_context": Mode["With-context"], "context_ref_num": context_ref_num,
+    map_fn_kwargs = {"with_context": Mode["Zero-shot"] + Mode["With-context"], "context_ref_num": context_ref_num,
                      'elasticsearch_url': elastic_url, 'index_name': index_name, 'model_name': model_name}
     # check mode
     assert Mode["Zero-shot"] + Mode["With-context"] == 1, "Only one mode can be used at a time"

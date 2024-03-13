@@ -12,5 +12,5 @@
                       "../../data_v2/loop_output/DPR/original_retrieval_result/webq/webq-test-all-mpnet",
                       "../../data_v2/loop_output/DPR/original_retrieval_result/pop/pop-test-all-mpnet",
                       "../../data_v2/loop_output/DPR/original_retrieval_result/tqa/tqa-test-all-mpnet"],
-      "elasticsearch_url": "http://124.16.138.142:9978"
+      "elasticsearch_url": "http://124.16.138.140:9978"
     }

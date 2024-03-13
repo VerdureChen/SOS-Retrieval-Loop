@@ -4,3 +4,6 @@
 [submodule "externals/MonoT5"]
 	path = externals/MonoT5
 	url = git@github.com:VerdureChen/pygaggle.git
+[submodule "externals/popular-fonts"]
+	path = externals/popular-fonts
+	url = https://github.com/chengda/popular-fonts.git

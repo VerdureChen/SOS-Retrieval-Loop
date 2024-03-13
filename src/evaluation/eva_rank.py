@@ -127,6 +127,13 @@ def compute_change_rank(result_files, generated_files, cut_off=100):
             change_em['1->1'] = change_em.get('1->1', 0) + 1
         else:
             print('error')
+    # check dict key exist
+    for key in ['0->1', '1->0', '0->0', '1->1']:
+        if key not in change_em:
+            change_em[key] = 0
+    for key in ['0->1', '1->0']:
+        if key not in change_index:
+            change_index[key] = []
     return change_em, change_index
 
 
