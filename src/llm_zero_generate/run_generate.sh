@@ -5,6 +5,14 @@
 #MODEL_NAMES=(llama2-13b-chat baichuan2-13b-chat gpt-3.5-turbo) #running: pop trivia finished: nq wq
 
 MODEL_NAMES=(chatglm3-6b) #running: pop trivia finished: nq wq
+GENERATE_BASE_AND_KEY=(
+   "gpt-3.5-turbo http://124.16.138.150:8113/v1 xxx"
+   "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
+   "qwen-14b-chat http://124.16.138.150:8113/v1 xxx"
+   "llama2-13b-chat http://124.16.138.150:8113/v1 xxx"
+   "baichuan2-13b-chat http://124.16.138.150:8113/v1 xxx"
+  )
+
 DATA_NAMES=(tqa pop nq webq)
 CONTEXT_REF_NUM=1
 QUESTION_FILE_NAMES=(
@@ -33,6 +41,16 @@ for ((i=0;i<${LOOP_NUM};i++))
 do
 for MODEL_NAME in "${MODEL_NAMES[@]}"
 do
+  # 遍历键值对数组
+    for entry in "${GENERATE_BASE_AND_KEY[@]}"; do
+        if [[ ${entry} == $MODEL_NAME* ]]; then
+            # 读取URL和key
+            read -ra ADDR <<< "$entry"
+            API_BASE=${ADDR[1]}
+            API_KEY=${ADDR[2]}
+            break
+        fi
+    done
   for QUERY_DATA_NAME in "${DATA_NAMES[@]}"
   do
     for QUESTION_FILE_NAME in "${QUESTION_FILE_NAMES[@]}"
@@ -48,7 +66,7 @@ do
                               --data_name "${QUERY_DATA_NAME}" \
                               --stage "generate" \
                               --output_dir "${CONFIG_PATH}" \
-                              --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'", "context_ref_num": "'"${CONTEXT_REF_NUM}"'"}'
+                              --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'", "context_ref_num": "'"${CONTEXT_REF_NUM}"'", "api-base": "'"${API_BASE}"'", "api-key": "'"${API_KEY}"'"}'
       wait
       echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
       python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &

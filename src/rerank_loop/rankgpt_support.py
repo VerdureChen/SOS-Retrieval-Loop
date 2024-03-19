@@ -12,29 +12,6 @@ from rankgpt_prompter import Prompter
 import copy
 import time
 
-# def get_openai_api(model_name):
-#     if model_name == "Qwen":
-#         print("Using Qwen")
-#         openai.api_base = "http://0.0.0.0:8111/v1"
-#         openai.api_key = "xxx"
-#     elif model_name == "Llama":
-#         print("Using Llama")
-#         openai.api_base = "http://0.0.0.0:8223/v1"
-#         openai.api_key = "xxx"
-#     elif model_name == "chatglm3":
-#         print("Using chatglm3")
-#         openai.api_base = "http://0.0.0.0:8113/v1"
-#         openai.api_key = "xxx"
-#     elif model_name == "baichuan2-13b-chat":
-#         print("Using baichuan2-13b-chat")
-#         openai.api_base = "http://0.0.0.0:8222/v1"
-#         openai.api_key = "xxx"
-#     elif model_name == "gpt-3.5-turbo":
-#         print("Using gpt-3.5-turbo")
-#         openai.api_base = "http://47.245.109.131:5555/v1"
-#         openai.api_key = "sk-Y5UPxxoh10M9h50RBe8e70EfEc484556A80a8717623aEb2f"
-#     else:
-#         raise ValueError("Model name not supported")
 
 
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, max=10))

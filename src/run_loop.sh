@@ -20,6 +20,15 @@ CONTEXT_REF_NUM=5
 #NORMALIZE_EMBEDDINGS=False
 GENERATE_MODEL_NAMES=(gpt-3.5-turbo chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat) #running: pop trivia finished: nq wq
 #GENERATE_DATA_NAMES=(nq)
+GENERATE_BASE_AND_KEY=(
+   "gpt-3.5-turbo http://124.16.138.150:8113/v1 xxx"
+   "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
+   "qwen-14b-chat http://124.16.138.150:8113/v1 xxx"
+   "llama2-13b-chat http://124.16.138.150:8113/v1 xxx"
+   "baichuan2-13b-chat http://124.16.138.150:8113/v1 xxx"
+  )
+
+
 
 #创建目录
 #TIMESTAMP=$(date +%Y%m%d%H%M%S)
@@ -219,6 +228,16 @@ do
 
     for MODEL_NAME in "${GENERATE_MODEL_NAMES[@]}"
     do
+      # 遍历键值对数组
+      for entry in "${GENERATE_BASE_AND_KEY[@]}"; do
+          if [[ ${entry} == $MODEL_NAME* ]]; then
+              # 读取URL和key
+              read -ra ADDR <<< "$entry"
+              API_BASE=${ADDR[1]}
+              API_KEY=${ADDR[2]}
+              break
+          fi
+      done
       cd ../llm_zero_generate
       echo "rewrite config file for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
       CONFIG_PATH="${LOOP_CONFIG_PATH_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}_generate_loop_${LOOP_NUM}.json"
@@ -230,7 +249,7 @@ do
                               --loop "${LOOP_NUM}" \
                               --stage "generate" \
                               --output_dir "${CONFIG_PATH}" \
-                              --overrides '{"question_file_path": "'"${GENERATE_INPUT_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'","context_ref_num": "'"${CONTEXT_REF_NUM}"'", "elasticsearch_url": "'"${elasticsearch_url}"'", "with_context": true}'
+                              --overrides '{"question_file_path": "'"${GENERATE_INPUT_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'","context_ref_num": "'"${CONTEXT_REF_NUM}"'", "elasticsearch_url": "'"${elasticsearch_url}"'", "with_context": true, "api-base": "'"${API_BASE}"'", "api-key": "'"${API_KEY}"'"}'
 #      wait
       echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
       python get_response_llm.py --config_file_path "$CONFIG_PATH" > "$LOG_DIR" 2>&1 &

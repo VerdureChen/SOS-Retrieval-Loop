@@ -545,7 +545,7 @@ class RankGPTReranker(UnsupervisedPassageReranker):
 
         self.model = self.args.rankgpt_llm_model_name
 
-        get_openai_api(self.model)
+        get_openai_api(self.model, self.args.rankgpt_api_base, self.args.rankgpt_api_key)
 
         self.prompter_name = self.args.rankgpt_prompter_name
 
@@ -765,7 +765,8 @@ def get_args():
 
     group.add_argument('--rankgpt-step-size', type=int, default=10,
                             help='Step size.')
-
+    group.add_argument('--rankgpt-api-key', type=str, default="", help="API key")
+    group.add_argument('--rankgpt-api-base', type=str, default="", help="API base")
 
     args = parser.parse_args()
     args.keep_empty = False

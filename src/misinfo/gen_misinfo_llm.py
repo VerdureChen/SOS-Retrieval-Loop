@@ -10,6 +10,8 @@ import datasets
 import sys
 sys.path.append('../retrieval_loop')
 from elastic_bm25_search_with_metadata import ElasticSearchBM25Retriever
+sys.path.append('../llm_zero_generate')
+from get_response_llm import get_openai_api
 from eva_mis import evaluate
 import random
 # define global variables Mode
@@ -42,31 +44,6 @@ Prompt = {
 }
 
 
-def get_openai_api(model_name):
-    if model_name == "Qwen":
-        print("Using Qwen")
-        openai.api_base = "http://124.16.138.150:8111/v1"
-        openai.api_key = "xxx"
-    elif model_name == "Llama":
-        print("Using Llama")
-        openai.api_base = "http://124.16.138.150:8223/v1"
-        openai.api_key = "xxx"
-    elif model_name == "chatglm3":
-        print("Using chatglm3")
-        openai.api_base = "http://124.16.138.150:8113/v1"
-        openai.api_key = "xxx"
-    elif model_name == "baichuan2-13b-chat":
-        print("Using baichuan2-13b-chat")
-        openai.api_base = "http://124.16.138.150:8222/v1"
-        openai.api_key = "xxx"
-    elif model_name == "gpt-3.5-turbo":
-        print("Using gpt-3.5-turbo")
-        # openai.api_base = "https://one-api.ponte.top/v1"
-        # openai.api_key = "sk-9y7d4TtOJO3xzHXn6dCa9fE02d18436d86Be540a00DcD1F8"
-        openai.api_base = "http://47.245.109.131:5555/v1"
-        openai.api_key = "sk-fLDpN1V5oOBlNK4E78716cB2B8D44bC5Af30C80b5bFaBb88"
-    else:
-        raise ValueError("Model name not supported")
 
 def get_args():
     # get config_file_path, which is the path to the config file
@@ -278,6 +255,8 @@ if __name__ == '__main__':
     question_file_path = config["question_file_path"]
     output_file_path = config["output_file_path"]
     misinfo_type = config["misinfo_type"]
+    api_key = config["api-key"]
+    api_base = config["api-base"]
     print(config)
     # config = {
     #     "model_name": "Qwen",
@@ -287,7 +266,7 @@ if __name__ == '__main__':
     # }
 
     # set openai api
-    get_openai_api(model_name)
+    get_openai_api(model_name, api_base, api_key)
     if model_name == "gpt-3.5-turbo":
         model_name = "gpt-3.5-turbo-0613"
     # read dataset

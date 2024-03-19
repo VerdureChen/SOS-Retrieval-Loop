@@ -377,8 +377,7 @@ def format_tsv_output(directory_name, results, task, output_file_name=None):
 
 
 
-
-def compute_res(directory, task, elasticsearch_url=None, index_name=None):
+def compute_res(directory, task, elasticsearch_url=None, index_name=None, api_key=None, api_base=None):
     directory_name = os.path.basename(directory)
     output_file_dir = os.path.join(directory, 'results')
     if not os.path.exists(output_file_dir):
@@ -507,7 +506,7 @@ def compute_res(directory, task, elasticsearch_url=None, index_name=None):
                 generate_model_name, retrieval_method_name, rerank_model_name, ref_num, loop_num, file_type = method_name
                 mis_answer_path = os.path.dirname(directory)
                 file_path = os.path.join(directory, file_name)
-                EM = calculate_mis_em_llm(file_path, mis_answer_path)
+                EM = calculate_mis_em_llm(file_path, mis_answer_path, api_base, api_key)
                 if rerank_model_name is not None:
                     method = f'{retrieval_method_name}+{rerank_model_name}'
                 else:
@@ -521,7 +520,7 @@ def compute_res(directory, task, elasticsearch_url=None, index_name=None):
             elif method_name[0] is not None and task == 'QA_llm_right':
                 generate_model_name, retrieval_method_name, rerank_model_name, ref_num, loop_num, file_type = method_name
                 file_path = os.path.join(directory, file_name)
-                EM = calculate_right_em_llm(file_path)
+                EM = calculate_right_em_llm(file_path, api_base, api_key)
                 if rerank_model_name is not None:
                     method = f'{retrieval_method_name}+{rerank_model_name}'
                 else:
@@ -660,6 +659,8 @@ def get_args():
     parser.add_argument('--task', type=str, default='retrieval')
     parser.add_argument('--elasticsearch_url', type=str, default='http://124.16.138.150:9978', help='elasticsearch url for bleu task')
     parser.add_argument('--index_name', type=str, default='bm25_psgs_index', help='elasticsearch index for bleu task')
+    parser.add_argument('--api_key', type=str, default=None, help='openai api key')
+    parser.add_argument('--api_base', type=str, default=None, help='openai api base')
     args = parser.parse_args()
     config = read_config_from_json(args.config_file_path)
     # json likes
@@ -698,7 +699,7 @@ def override_args_by_config(args, config):
 
 if __name__ == '__main__':
     args = get_args()
-    compute_res(args.directory, args.task, args.elasticsearch_url, args.index_name)
+    compute_res(args.directory, args.task, args.elasticsearch_url, args.index_name, args.api_key, args.api_base)
 
 
 

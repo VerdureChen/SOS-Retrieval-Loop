@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# if you are using "QA_llm_mis" or "QA_llm_right" task, you need to set the API_KEY and API_BASE
+API_KEY="none"
+API_BASE="none"
 QUERY_DATA_NAMES=(nq webq pop tqa)
 #RESULT_NAMES=(
 #    "nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20231227041949"
@@ -62,6 +65,6 @@ do
     echo "QUERY_DATA_NAME: ${QUERY_DATA_NAME}"
     echo "RESULT_NAME: ${RESULT_NAME}"
     echo "RESULT_PATH: ${RESULT_PATH}"
-    python3 eva_pipe.py --config_file_path none --directory ${RESULT_PATH} --task $TASK
+    python3 eva_pipe.py --config_file_path none --directory ${RESULT_PATH} --task $TASK --api_key $API_KEY --api_base $API_BASE
   done
 done

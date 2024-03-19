@@ -28,31 +28,24 @@ Prompt = {
 }
 
 
-def get_openai_api(model_name):
+def get_openai_api(model_name, api_base=None, api_key=None):
     if model_name == "Qwen":
         print("Using Qwen")
-        openai.api_base = "http://124.16.138.150:8111/v1"
-        openai.api_key = "xxx"
     elif model_name == "Llama":
         print("Using Llama")
-        openai.api_base = "http://124.16.138.150:8223/v1"
-        openai.api_key = "xxx"
     elif model_name == "chatglm3":
         print("Using chatglm3")
-        openai.api_base = "http://124.16.138.150:8113/v1"
-        openai.api_key = "xxx"
     elif model_name == "baichuan2-13b-chat":
         print("Using baichuan2-13b-chat")
-        openai.api_base = "http://124.16.138.150:8222/v1"
-        openai.api_key = "xxx"
     elif model_name == "gpt-3.5-turbo":
         print("Using gpt-3.5-turbo")
-        # openai.api_base = "https://one-api.ponte.top/v1"
-        # openai.api_key = "sk-9y7d4TtOJO3xzHXn6dCa9fE02d18436d86Be540a00DcD1F8"
-        openai.api_base = "http://47.245.109.131:5555/v1"
-        openai.api_key = "sk-fLDpN1V5oOBlNK4E78716cB2B8D44bC5Af30C80b5bFaBb88"
     else:
         raise ValueError("Model name not supported")
+    if api_base is None or api_key is None:
+        raise ValueError("api_key and api_base must be provided")
+    
+    openai.api_key = api_key
+    openai.api_base = api_base
 
 def get_args():
     # get config_file_path, which is the path to the config file
@@ -202,6 +195,8 @@ if __name__ == '__main__':
     elastic_url = config["elasticsearch_url"]
     index_name = config["index_name"]
     context_ref_num = int(config["context_ref_num"])
+    api_key = config["api-key"]
+    api_base = config["api-base"]
     print(config)
     # config_file:
     # {
@@ -215,7 +210,7 @@ if __name__ == '__main__':
     # }
 
     # set openai api
-    get_openai_api(model_name)
+    get_openai_api(model_name, api_base, api_key)
     if model_name == "gpt-3.5-turbo":
         model_name = "gpt-3.5-turbo-0613"
     # read dataset

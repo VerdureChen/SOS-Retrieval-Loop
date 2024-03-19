@@ -14,5 +14,7 @@
   "index_name": "bm25_psgs_index",
   "elasticsearch_url": "http://124.16.138.142:9978",
   "retriever_topk_passages_path": "../../data_v2/ret_output/DPR/tqa-test-h10-bge-large.json",
-  "reranker_output_dir": "../../data_v2/ret_output/DPR"
+  "reranker_output_dir": "../../data_v2/ret_output/DPR",
+  "rankgpt_api_key": "",
+  "rankgpt_api_base": ""
 }

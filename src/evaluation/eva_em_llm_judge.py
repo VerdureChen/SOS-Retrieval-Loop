@@ -9,32 +9,9 @@ import datasets
 import string
 import openai
 from tenacity import retry, stop_after_attempt, wait_exponential
+sys.path.append('../llm_zero_generate')
+from get_response_llm import get_openai_api
 
-def get_openai_api(model_name):
-    if model_name == "Qwen":
-        print("Using Qwen")
-        openai.api_base = "http://124.16.138.150:8111/v1"
-        openai.api_key = "xxx"
-    elif model_name == "Llama":
-        print("Using Llama")
-        openai.api_base = "http://124.16.138.150:8223/v1"
-        openai.api_key = "xxx"
-    elif model_name == "chatglm3":
-        print("Using chatglm3")
-        openai.api_base = "http://124.16.138.150:8113/v1"
-        openai.api_key = "xxx"
-    elif model_name == "baichuan2-13b-chat":
-        print("Using baichuan2-13b-chat")
-        openai.api_base = "http://124.16.138.150:8222/v1"
-        openai.api_key = "xxx"
-    elif model_name == "gpt-3.5-turbo":
-        print("Using gpt-3.5-turbo")
-        # openai.api_base = "https://one-api.ponte.top/v1"
-        # openai.api_key = "sk-9y7d4TtOJO3xzHXn6dCa9fE02d18436d86Be540a00DcD1F8"
-        openai.api_base = "http://47.245.109.131:5555/v1"
-        openai.api_key = "sk-Y5UPxxoh10M9h50RBe8e70EfEc484556A80a8717623aEb2f"
-    else:
-        raise ValueError("Model name not supported")
 
 
 def is_supported_by_gpt(model_name, question, response, ground_truth):
@@ -96,7 +73,7 @@ def get_response_llm(model_name, text, filter_words=None):
     return resp
 
 
-def evaluate(predictions, mis_answer_dict):
+def evaluate(predictions, mis_answer_dict, api_base, api_key):
     # evaluate the predictions with exact match
     def _normalize_answer(s):
         def remove_articles(text):
@@ -133,7 +110,7 @@ def evaluate(predictions, mis_answer_dict):
                     break
         return example
 
-    get_openai_api('gpt-3.5-turbo')
+    get_openai_api('gpt-3.5-turbo', api_base, api_key)
     fn_args = {'mis_answer_dict': mis_answer_dict, 'model_name': 'gpt-3.5-turbo-0613'}
     predictions = predictions.map(exact_match_score, fn_kwargs=fn_args, num_proc=4)
     return predictions
@@ -153,20 +130,20 @@ def get_mis_answer(retrieval_file_path):
 
 
 
-def calculate_mis_em_llm(retrieval_file, mis_answer_path):
+def calculate_mis_em_llm(retrieval_file, mis_answer_path, api_base, api_key):
     mis_answer_dict = get_mis_answer(mis_answer_path)
     dataset = datasets.load_dataset("json", data_files=retrieval_file)["train"]
     print('evaluate QA EM...')
-    prediction = evaluate(dataset, mis_answer_dict)
+    prediction = evaluate(dataset, mis_answer_dict, api_base, api_key)
     EM = sum(prediction['exact_match']) / len(prediction['exact_match'])
     return EM
 
 
-def calculate_right_em_llm(retrieval_file):
+def calculate_right_em_llm(retrieval_file, api_base, api_key):
     dataset = datasets.load_dataset("json", data_files=retrieval_file)["train"]
     print('evaluate QA EM...')
     mis_answer_dict = {}
-    prediction = evaluate(dataset, mis_answer_dict)
+    prediction = evaluate(dataset, mis_answer_dict, api_base, api_key)
     EM = sum(prediction['exact_match']) / len(prediction['exact_match'])
     return EM
 

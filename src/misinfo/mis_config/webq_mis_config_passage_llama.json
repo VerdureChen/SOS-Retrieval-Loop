@@ -2,5 +2,7 @@
         "model_name": "Llama",
         "question_file_path": "../../data_v2/misinfo_data/DPR/mis_passage/webq-test-gen-gpt-3.5-turbo-passage.jsonl",
         "output_file_path": "../../data_v2/misinfo_data/DPR/mis_passage/webq-test-gen-llama-passage.jsonl",
-        "misinfo_type": "mis_passage"
+        "misinfo_type": "mis_passage",
+        "api-base": "",
+        "api-key": ""
     }

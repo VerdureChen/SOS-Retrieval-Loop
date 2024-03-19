@@ -2,5 +2,7 @@
         "model_name": "Qwen",
         "question_file_path": "../../data_v2/input_data/DPR/sampled_query/nq-test-sample-10.jsonl",
         "output_file_path": "../../data_v2/misinfo_data/DPR/mis_answer/nq-test-gen-qwen.jsonl",
-        "misinfo_type": "mis_answer"
+        "misinfo_type": "mis_answer",
+        "api-base": "",
+        "api-key": ""
     }

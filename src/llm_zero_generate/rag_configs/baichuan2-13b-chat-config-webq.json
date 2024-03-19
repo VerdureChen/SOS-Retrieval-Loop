@@ -5,5 +5,7 @@
   "with_context": true,
   "elasticsearch_url": "http://124.16.138.142:9978",
   "index_name": "bm25_psgs_index",
-  "context_ref_num": 5
+  "context_ref_num": 5,
+  "api-base": "http://124.16.138.150:8222/v1",
+  "api-key": "xxx"
 }
