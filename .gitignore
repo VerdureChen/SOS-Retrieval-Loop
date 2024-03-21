@@ -59,6 +59,7 @@ LLM-Rob/
 *.faiss
 *.pkl
 *.png
+!pipeline.png
 # OS generated files #
 ######################
 .DS_Store
