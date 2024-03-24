@@ -7,6 +7,7 @@ import openai
 import os
 import datasets
 import sys
+
 sys.path.append('../retrieval_loop')
 from elastic_bm25_search_with_metadata import ElasticSearchBM25Retriever
 from eva_generate import evaluate
@@ -20,11 +21,11 @@ Prompt = {
     "Zero-shot": "Provide a background document in 100 words according to your knowledge from Wikipedia to answer the given question."
                  "\n\nQuestion:{question} \n\nBackground Document:",
     "With-context": "Context information is below.\n"
-                  "---------------------\n"
-                  "{context_str}\n"
-                  "---------------------\n"
-                  "Using both the context information and also using your own knowledge, answer the following question"
-                  "with a background document in 100 words.\n\nQuestion:{question} \n\nBackground Document:",
+                    "---------------------\n"
+                    "{context_str}\n"
+                    "---------------------\n"
+                    "Using both the context information and also using your own knowledge, answer the following question"
+                    "with a background document in 100 words.\n\nQuestion:{question} \n\nBackground Document:",
 }
 
 
@@ -43,9 +44,10 @@ def get_openai_api(model_name, api_base=None, api_key=None):
         raise ValueError("Model name not supported")
     if api_base is None or api_key is None:
         raise ValueError("api_key and api_base must be provided")
-    
+
     openai.api_key = api_key
     openai.api_base = api_base
+
 
 def get_args():
     # get config_file_path, which is the path to the config file
@@ -82,7 +84,6 @@ def get_response_llm(model_name, text, filter_words=None):
         stream=False,
     )
 
-
     # print(text)
     # print(completion.choices[0].message.content)
     # print("\n")
@@ -106,7 +107,7 @@ def prepare_input(question, context, index, mode, context_ref_num=0):
         contexts = context[:context_ref_num]
         context_doc_ids = [item["docid"] for item in contexts]
         context_texts = [index.get_document_by_id(doc_id).page_content for doc_id in context_doc_ids]
-        context_str = "\n".join(f"[Context {i+1}]: {context_text}" for i, context_text in enumerate(context_texts))
+        context_str = "\n".join(f"[Context {i + 1}]: {context_text}" for i, context_text in enumerate(context_texts))
         prompt = prompt.format(question=question, context_str=context_str)
     else:
         raise ValueError("Mode not supported")
@@ -123,41 +124,45 @@ def get_index(elasticsearch_url, index_name, with_context=False):
 
 
 def read_dataset(question_file_path, with_context):
-    if with_context:
-        print("Using context")
-        Mode["With-context"] = 1
-        with open(question_file_path, "r", encoding='utf-8') as f:
-            question_dataset = json.load(f)
-        formatted_data = [
-            {
-                "id": qid,
-                "question": details["question"],
-                "answers": details["answers"],
-                "contexts": details["contexts"],
-            }
-            for qid, details in question_dataset.items()
-        ]
-        question_dataset = datasets.Dataset.from_list(formatted_data)
-
-    else:
+    try:
+        question_dataset = datasets.load_dataset("json", data_files=question_file_path)["train"]
+        # if "answer", rename to "answers"
+        if "answer" in question_dataset.column_names:
+            question_dataset = question_dataset.rename_column("answer", "answers")
         print("Not using context")
         Mode["Zero-shot"] = 1
+
+        return question_dataset
+    except:
+        with open(question_file_path, "r", encoding='utf-8') as f:
+            question_dataset = json.load(f)
+        for qid, details in question_dataset.items():
+            context_key = "contexts" if "contexts" in details else "context"
+            answer_key = "answers" if "answers" in details else "answer"
+            break
+
+        if with_context:
+            print("Using context")
+            Mode["With-context"] = 1
+        else:
+            print("Not using context")
+            Mode["Zero-shot"] = 1
+
         with open(question_file_path, "r", encoding='utf-8') as f:
             question_dataset = json.load(f)
         formatted_data = [
             {
                 "id": qid,
                 "question": details["question"],
-                "answers": details["answers"],
-                "contexts": details["contexts"],
+                "answers": details[answer_key],
+                "contexts": details[context_key],
             }
             for qid, details in question_dataset.items()
         ]
         question_dataset = datasets.Dataset.from_list(formatted_data)
         # question_dataset = datasets.load_dataset("json", data_files=question_file_path)["train"]
 
-
-    return question_dataset
+        return question_dataset
 
 
 def get_response(example, with_context=0, context_ref_num=0, elasticsearch_url=None, index_name=None, model_name=None):
@@ -222,8 +227,6 @@ if __name__ == '__main__':
     assert Mode["Zero-shot"] + Mode["With-context"] == 1, "Only one mode can be used at a time"
     print(f"Number of examples: {len(question_dataset)}")
 
-
-
     # question_dataset = question_dataset.map(get_response, num_proc=4, fn_kwargs=map_fn_kwargs)
     # question_dataset.to_json(output_file_path, force_ascii=False)
 
@@ -274,11 +277,10 @@ if __name__ == '__main__':
     EM = sum(prediction['exact_match']) / len(prediction['exact_match'])
     print(f"EM:{EM}")
 
-    #write metrics to file
+    # write metrics to file
     metrics_file_path = os.path.join(os.path.dirname(output_file_path), f"{model_name}_rag_metrics.json")
     with open(metrics_file_path, "a") as f:
         f.write(f"{output_file_path}_{context_ref_num}: {EM}\n")
-
 
     combined_dataset.to_json(output_file_path, force_ascii=False)
 
@@ -289,7 +291,3 @@ if __name__ == '__main__':
     for shard_name in shard_names:
         os.remove(shard_name)
     print("Done")
-
-
-
-

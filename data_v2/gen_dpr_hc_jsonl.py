@@ -4,6 +4,7 @@
 import json
 from tqdm import tqdm
 import ast
+import os
 
 def convert_psgs_to_jsonl(psgs_file, output_file):
     with open(psgs_file, 'r', encoding='utf-8') as f, open(output_file, 'w', encoding='utf-8') as out:
@@ -23,4 +24,6 @@ def convert_psgs_to_jsonl(psgs_file, output_file):
 if __name__ == '__main__':
     psgs_file = 'raw_data/DPR/psgs_w100.tsv'
     output_file = 'input_data/DPR/psgs_w100.jsonl'
+    if not os.path.exists('input_data/DPR'):
+        os.makedirs('input_data/DPR')
     convert_psgs_to_jsonl(psgs_file, output_file)

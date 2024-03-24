@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-#MODEL_NAMES=(chatglm3-6b qwen-14b-chat) # running:pop  finished: wq nq trivia
-#enumarate all the models
-#MODEL_NAMES=(llama2-13b-chat baichuan2-13b-chat gpt-3.5-turbo) #running: pop trivia finished: nq wq
 
-MODEL_NAMES=(chatglm3-6b) #running: pop trivia finished: nq wq
+MODEL_NAMES=(chatglm3-6b) #chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat gpt-3.5-turbo
 GENERATE_BASE_AND_KEY=(
    "gpt-3.5-turbo http://124.16.138.150:8113/v1 xxx"
    "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
