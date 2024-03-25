@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#sleep 6h
-
 MODEL_NAMES=(bm25) # dpr contriever) # retromae all-mpnet bge-large llm-embedder bm25 contriever dpr)
 DATA_NAMES=(psgs_w100)
 

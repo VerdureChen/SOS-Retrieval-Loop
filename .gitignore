@@ -69,3 +69,5 @@ LLM-Rob/
 .Trashes
 ehthumbs.db
 Thumbs.db
+clean_requirements.txt
+user_requirements.txt

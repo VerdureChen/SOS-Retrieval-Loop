@@ -31,16 +31,16 @@ GENERATE_BASE_AND_KEY=(
 
 
 #创建目录
-#TIMESTAMP=$(date +%Y%m%d%H%M%S)
-TIMESTAMP=20240206164013
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+#TIMESTAMP=20240206164013
 # concanate all the query data names
 QUERY_DATA_NAME=$(IFS=_; echo "${QUERY_DATA_NAMES[*]}")
 
-LOOP_CONFIG_PATH_NAME="${RUN_DIR}/run_configs/mis_filter_bleu_${QUERY_DATA_NAME}_loop_config_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
+LOOP_CONFIG_PATH_NAME="${RUN_DIR}/run_configs/${QUERY_DATA_NAME}_loop_config_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $LOOP_CONFIG_PATH_NAME
-TOTAL_LOG_DIR="${RUN_DIR}/run_logs/mis_filter_bleu_${QUERY_DATA_NAME}_loop_log_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
+TOTAL_LOG_DIR="${RUN_DIR}/run_logs/${QUERY_DATA_NAME}_loop_log_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $TOTAL_LOG_DIR
-OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/mis_filter_bleu_${QUERY_DATA_NAME}_loop_output_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
+OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/${QUERY_DATA_NAME}_loop_output_${RETRIEVAL_MODEL_NAME}_${RERANK_MODEL_NAME}_total_loop_${TOTAL_LOOP_NUM}_${TIMESTAMP}"
 mkdir -p $OUTPUT_DIR
 
 echo "create config dir: ${LOOP_CONFIG_PATH_NAME}"

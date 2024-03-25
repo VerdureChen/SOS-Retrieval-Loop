@@ -38,6 +38,8 @@ run_items=(
 #  "item10 bge-base upr"
 )
 GENERATE_MODEL_NAMES=(baichuan2-13b-chat qwen-14b-chat gpt-3.5-turbo llama2-13b-chat chatglm3-6b) #running: pop trivia finished: nq wq
+
+
 # 新建一个空数组用于存储去重后的检索方法名称
 uniq_retrieval_methods=()
 
@@ -142,7 +144,7 @@ for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
                           --overrides '{ "query_files": ['"${QUERY_FILE_LIST}"'], "output_files": ['"${OUTPUT_FILE_LIST}"'] }'
   wait
   echo "Running retrieval for ${RETRIEVAL_MODEL_NAME} on ${QUERY_DATA_NAME}..."
-#  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
   wait
 done
 #
@@ -185,13 +187,13 @@ for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"; do
     wait
     echo "Running rerank for ${RERANK_MODEL_NAME} on ${QUERY_DATA_NAME}..."
     # 运行分布式Python脚本
-#    torchrun  --nproc_per_node ${WORLD_SIZE} \
-#        --nnodes 1 \
-#        --node_rank 0 \
-#        --master_addr localhost \
-#        --master_port $PORT \
-#        rerank_for_loop.py \
-#        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+    torchrun  --nproc_per_node ${WORLD_SIZE} \
+        --nnodes 1 \
+        --node_rank 0 \
+        --master_addr localhost \
+        --master_port $PORT \
+        rerank_for_loop.py \
+        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
     PORT=$((PORT+1))
     # 等待所有进程结束
     wait
@@ -266,7 +268,7 @@ do
                               --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'"}'
       wait
       echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
-#      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
+      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
       wait
   done
   done
