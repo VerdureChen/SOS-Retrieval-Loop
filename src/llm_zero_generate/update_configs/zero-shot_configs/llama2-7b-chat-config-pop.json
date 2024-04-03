@@ -1,0 +1,11 @@
+{
+  "model_name": "Llama2-7b",
+  "question_file_path": "../../data_v2/input_data/DPR/pop-test.jsonl",
+  "output_file_path": "../../data_v2/zero_gen_data/DPR/pop-test-gen-gpt-3.5-turbo.jsonl",
+  "with_context": false,
+  "elasticsearch_url": "http://124.16.138.142:9978",
+  "index_name": "bm25_psgs_index",
+  "context_ref_num": 0,
+  "api-base": "http://124.16.138.150:8223/v1",
+  "api-key": "xxx"
+}

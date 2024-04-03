@@ -3,7 +3,7 @@
 # if you are using "QA_llm_mis" or "QA_llm_right" task, you need to set the API_KEY and API_BASE
 API_KEY="none"
 API_BASE="none"
-QUERY_DATA_NAMES=(nq webq pop tqa)
+QUERY_DATA_NAMES=(nq webq)
 #RESULT_NAMES=(
 #    "nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20231227041949"
 #    "nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240113075935"
@@ -31,20 +31,24 @@ QUERY_DATA_NAMES=(nq webq pop tqa)
 #    "filter_bleu_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240131141119"
 #)
 
+#RESULT_NAMES=(
+#    "filter_source_nq_webq_pop_tqa_loop_output_bge-base_None_total_loop_10_20240204104046"
+#    "filter_source_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240203141208"
+#    "filter_source_nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240204091108"
+#    "filter_source_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240204103944"
+#)
 RESULT_NAMES=(
-    "filter_source_nq_webq_pop_tqa_loop_output_bge-base_None_total_loop_10_20240204104046"
-    "filter_source_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240203141208"
-    "filter_source_nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240204091108"
-    "filter_source_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240204103944"
+    "update_nq_webq_loop_output_bm25_None_total_loop_10_20240328134015"
 )
 
 #RESULT_NAMES=( "mis_passage_processed" )
 RESULT_DIR="../../data_v2/loop_output/DPR"
 #RESULT_DIR="../../data_v2/misinfo_data/DPR"
-#TASK="context_answer"
+TASK="context_answer"
 #TASK="retrieval"
 #TASK="bleu"
 #TASK="QA"
+#TASK="percentage"
 #TASK="misQA"
 #TASK="QA_llm_mis"
 #TASK="QA_llm_right"
@@ -53,8 +57,8 @@ RESULT_DIR="../../data_v2/loop_output/DPR"
 #TASK="filter_bleu_context_answer"
 #TASK="filter_source_retrieval"
 #TASK="filter_source_percentage"
-TASK="filter_source_context_answer"
-#TASK="percentage"
+#TASK="filter_source_context_answer"
+
 for ((i=0;i<${#QUERY_DATA_NAMES[@]};i++))
 do
   for ((j=0;j<${#RESULT_NAMES[@]};j++))

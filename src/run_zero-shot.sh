@@ -10,15 +10,15 @@ for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"; do
     mkdir -p "${OUTPUT_DIR}/${QUERY_DATA_NAME}"
 done
 
-OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/misinfo_retrieval_result"
-NEW_FILE_PATH="${RUN_DIR}/../data_v2/misinfo_data/DPR/mis_passage_processed"
-LOG_PATH="${RUN_DIR}/run_logs/misinfo_retrieval_log2"
-CONFIG_PATH="${RUN_DIR}/run_configs/misinfo_retrieval_config2"
+#OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/misinfo_retrieval_result"
+#NEW_FILE_PATH="${RUN_DIR}/../data_v2/misinfo_data/DPR/mis_passage_processed"
+#LOG_PATH="${RUN_DIR}/run_logs/misinfo_retrieval_log2"
+#CONFIG_PATH="${RUN_DIR}/run_configs/misinfo_retrieval_config2"
 
-#OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/zero-shot_retrieval_result"
-#NEW_FILE_PATH="${RUN_DIR}/../data_v2/zero_gen_data/DPR/post_processed_sampled_data"
-#LOG_PATH="${RUN_DIR}/run_logs/zero-shot_retrieval_log_2"
-#CONFIG_PATH="${RUN_DIR}/run_configs/zero-shot_retrieval_config_2"
+OUTPUT_DIR="${RUN_DIR}/../data_v2/loop_output/DPR/update_zero-shot_retrieval_result"
+NEW_FILE_PATH="${RUN_DIR}/../data_v2/update_data/DPR/update_passage_processed"
+LOG_PATH="${RUN_DIR}/run_logs/update_zero-shot_retrieval_log"
+CONFIG_PATH="${RUN_DIR}/run_configs/update_zero-shot_retrieval_config"
 
 elasticsearch_url="http://124.16.138.150:9978"
 mkdir -p "${LOG_PATH}"
@@ -144,7 +144,7 @@ for RETRIEVAL_MODEL_NAME in "${uniq_retrieval_methods[@]}"; do
                           --overrides '{ "query_files": ['"${QUERY_FILE_LIST}"'], "output_files": ['"${OUTPUT_FILE_LIST}"'] }'
   wait
   echo "Running retrieval for ${RETRIEVAL_MODEL_NAME} on ${QUERY_DATA_NAME}..."
-  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+#  python retrieve_methods.py --config_file_path "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
   wait
 done
 #
@@ -187,13 +187,13 @@ for QUERY_DATA_NAME in "${QUERY_DATA_NAMES[@]}"; do
     wait
     echo "Running rerank for ${RERANK_MODEL_NAME} on ${QUERY_DATA_NAME}..."
     # 运行分布式Python脚本
-    torchrun  --nproc_per_node ${WORLD_SIZE} \
-        --nnodes 1 \
-        --node_rank 0 \
-        --master_addr localhost \
-        --master_port $PORT \
-        rerank_for_loop.py \
-        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
+#    torchrun  --nproc_per_node ${WORLD_SIZE} \
+#        --nnodes 1 \
+#        --node_rank 0 \
+#        --master_addr localhost \
+#        --master_port $PORT \
+#        rerank_for_loop.py \
+#        --config "$CONFIG_DIR" > "$LOG_DIR" 2>&1 &
     PORT=$((PORT+1))
     # 等待所有进程结束
     wait
@@ -268,7 +268,7 @@ do
                               --overrides '{"question_file_path": "'"${QUESTION_FILE_PATH}"'", "output_file_path": "'"${GENERATE_OUTPUT_NAME}"'"}'
       wait
       echo "Running generate for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
-      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
+#      python get_response_llm.py --config_file_path "${CONFIG_PATH}" > "${LOG_DIR}" 2>&1 &
       wait
   done
   done

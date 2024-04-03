@@ -23,13 +23,23 @@ from compute_self_bleu import calculate_self_bleu, get_index, gather_LLM_gen_tex
 from compute_mis_em import calculate_mis_em
 from eva_em_llm_judge import calculate_mis_em_llm, calculate_right_em_llm
 
+# generate_model_names = [
+#     'gpt-3.5-turbo',
+#     'baichuan2-13b-chat',
+#     'qwen-14b-chat',
+#     'chatglm3-6b',
+#     'llama2-13b-chat'
+# ]
 generate_model_names = [
-    'gpt-3.5-turbo',
-    'baichuan2-13b-chat',
+    'qwen-0.5b-chat',
+    'qwen-1.8b-chat',
+    'qwen-4b-chat',
+    'qwen-7b-chat',
+    'llama2-7b-chat',
+    'baichuan2-7b-chat',
+    'llama2-13b-chat',
     'qwen-14b-chat',
-    'chatglm3-6b',
-    'llama2-13b-chat'
-]
+    'gpt-3.5-turbo']
 
 retrieve_model_names = [
     'bm25',
@@ -361,10 +371,17 @@ def format_tsv_output(directory_name, results, task, output_file_name=None):
                                         row_data = [f"{ref_num}\t{generate_model_name}\t{retrieval_method_name}\t{cut}"]
                                         #获取每个loop的context_answer
                                         for loop in range(1, 11):
-                                            score = loops[str(loop)][ref_num]['context_answer'][f'{cutoff}_{em}']
-                                            # 计算score list中等于cut的元素个数
-                                            score = sum([1 for i in score if i == cut])
-                                            row_data.append(str(score))
+                                            try:
+                                                score = loops[str(loop)][ref_num]['context_answer'][f'{cutoff}_{em}']
+                                                #计算score list中等于cut的元素个数
+                                                score = sum([1 for i in score if i == cut])
+                                                row_data.append(str(score))
+                                            except KeyError:
+                                                row_data.append('-')
+                                            # score = loops[str(loop)][ref_num]['context_answer'][f'{cutoff}_{em}']
+                                            # # 计算score list中等于cut的元素个数
+                                            # score = sum([1 for i in score if i == cut])
+                                            # row_data.append(str(score))
                                         # 写入一行数据
                                         file.write("\t".join(row_data) + "\n")
                                 # 写入空行
@@ -564,6 +581,7 @@ def compute_res(directory, task, elasticsearch_url=None, index_name=None, api_ke
     if task in ['rank', 'context_answer', 'filter_bleu_rank', 'filter_source_rank', 'filter_bleu_context_answer', 'filter_source_context_answer']:
         # pair retrieval and QA file name
         print('pair retrieval and QA file name...')
+        print(retrieval_file_dict)
         for retrieval_file_name in retrieval_file_dict.keys():
             for QA_file_name in QA_file_dict.keys():
                 retrieval_method_name, loop_num, ref_num = retrieval_file_name.split('_')
@@ -622,8 +640,11 @@ def compute_res(directory, task, elasticsearch_url=None, index_name=None, api_ke
                         for ref_num in rank_order_dict[generate_model_name][retrieval_method_name][loop_num].keys():
                             retrieval_file = rank_order_dict[generate_model_name][retrieval_method_name][loop_num][ref_num]['retrieval_file']
                             QA_file = rank_order_dict[generate_model_name][retrieval_method_name][loop_num][ref_num]['QA_file']
-                            context_answer_dict = compute_top_answer_number(retrieval_file, QA_file)
-                            rank_order_dict[generate_model_name][retrieval_method_name][loop_num][ref_num]['context_answer'] = context_answer_dict
+                            try:
+                                context_answer_dict = compute_top_answer_number(retrieval_file, QA_file)
+                                rank_order_dict[generate_model_name][retrieval_method_name][loop_num][ref_num]['context_answer'] = context_answer_dict
+                            except Exception as e:
+                                print(f"f{retrieval_file} and {QA_file} error: {e}")
 
 
 

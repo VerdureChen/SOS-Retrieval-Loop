@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-MODEL_NAMES=(chatglm3-6b-chat baichuan2-13b-chat qwen-14b-chat llama2-13b-chat gpt-3.5-turbo)
+MODEL_NAMES=(qwen-0.5b-chat qwen-1.8b-chat qwen-4b-chat)
 QUERY_DATA_NAMES=(nq pop tqa webq)
 LOOP_NUM=0
-LOOP_CONFIG_PATH_NAME="../run_configs/misinfo_config"
-FROM_METHOD="misinfo"
+LOOP_CONFIG_PATH_NAME="../run_configs/update_configs"
+FROM_METHOD="update"
 
-TOTAL_LOG_DIR="../run_logs/misinfo_log"
-TOTAL_OUTPUT_DIR="../../data_v2/misinfo_data/DPR/mis_passage_processed"
+TOTAL_LOG_DIR="../run_logs/update_log"
+TOTAL_OUTPUT_DIR="../../data_v2/update_data/DPR/update_passage_processed"
 mkdir -p "${TOTAL_LOG_DIR}"
 mkdir -p "${TOTAL_OUTPUT_DIR}"
 mkdir -p "${LOOP_CONFIG_PATH_NAME}"
 
-INPUT_FILE_PATH="../../data_v2/misinfo_data/DPR/mis_passage"
+INPUT_FILE_PATH="../../data_v2/loop_output/DPR/zero_update_retrieval_result"
 
 for MODEL_NAME in "${MODEL_NAMES[@]}"
 do
@@ -21,7 +21,7 @@ do
 #    OUTPUT_DIR="${TOTAL_OUTPUT_DIR}/${QUERY_DATA_NAME}"
 #    mkdir -p "${OUTPUT_DIR}"
     echo "rewrite config file for ${MODEL_NAME} on ${QUERY_DATA_NAME}..."
-    INPUT_FILE_NAME="${INPUT_FILE_PATH}/${QUERY_DATA_NAME}-test-gen-${MODEL_NAME}-passage.jsonl"
+    INPUT_FILE_NAME="${INPUT_FILE_PATH}/${QUERY_DATA_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}-test-sample-200.jsonl_generate_context_ref_num_0.json"
     CONFIG_PATH="${LOOP_CONFIG_PATH_NAME}/${MODEL_NAME}_${QUERY_DATA_NAME}_postprocess_loop_${LOOP_NUM}.json"
     LOG_DIR="${TOTAL_LOG_DIR}/${MODEL_NAME}_${QUERY_DATA_NAME}_postprocess_loop_${LOOP_NUM}.log"
     POSTPROCESS_OUTPUT_NAME="${TOTAL_OUTPUT_DIR}/${QUERY_DATA_NAME}-test-gen-${MODEL_NAME}-postprocessed.jsonl"

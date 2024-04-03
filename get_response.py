@@ -1,9 +1,9 @@
 import openai
 import os
-# openai.api_base = "http://124.16.138.150:8223/v1"
-# openai.api_key = "xxx"
+openai.api_base = "http://124.16.138.144:7002/v1"
+openai.api_key = "xxx"
 #
-# os.environ["OPENAI_API_BASE"] = "http://124.16.138.150:8223/v1"
+# os.environ["OPENAI_API_BASE"] = "http://124.16.138.144:7001/v1"
 # os.environ["OPENAI_API_KEY"] = "xxx"
 
 

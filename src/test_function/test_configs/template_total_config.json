@@ -35,5 +35,10 @@
   "filter_source": {
         "max_self_bleu": 0.4,
         "num_docs": 5
+  },
+  "update_generate": {
+      "with_context": true,
+      "elasticsearch_url": "http://124.16.138.142:9978",
+      "context_ref_num": 5
   }
-    }
+}

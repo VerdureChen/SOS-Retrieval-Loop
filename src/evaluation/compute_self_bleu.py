@@ -22,14 +22,15 @@ def gather_LLM_gen_text(retrieval_file_path):
     #{"id":"baichuan2-13b-chat_nq_from_bge-base_bge_loop1_31_20240109095603","question":"how many countries are a part of opec?","answers":["14"],"response":"The background document provides important contextual information regarding the topic under consideration – namely, how many countries make up the Organization of the Petroleum Exporting Countries (OPEC). Founded in 1960, OPEC initially consisted of five countries – Iran, Iraq, Kuwait, Saudi Arabia, and Venezuela. Since then, it has grown into a permanent intergovernmental organization comprising 13 member countries today; all of them are major oil producers. They are joined by Algeria, Angola, Congo, Ecuador, Equatorial Guinea, Gabon, Libya, and the United Arab Emirates. By doing so, they aim to stabilize the volatile price of"}
     try:
         data = []
-        for i in range(1, 11):
+        for i in range(1, 10):
             file_path = os.path.join(retrieval_file_path, f'{i}', 'merged_file', 'merged.jsonl')
             with open(file_path, 'r') as f:
                 print(f'loading {file_path}')
                 for line in f:
                     data.append(json.loads(line))
         zero_paths = ["../../data_v2/zero_gen_data/DPR/post_processed_sampled_data/merged_file/merged.jsonl",
-                    "../../data_v2/misinfo_data/DPR/mis_passage_processed/merged_file/merged.jsonl",]
+                      "../../data_v2/misinfo_data/DPR/mis_passage_processed/merged_file/merged.jsonl",
+                      "../../data_v2/update_data/DPR/update_passage_processed/merged_file/merged.jsonl"]
         for zero_path in zero_paths:
             with open(zero_path, 'r') as f:
                 for line in f:
@@ -85,7 +86,10 @@ def calculate_self_bleu(retrieval_file, index, llm_data, topks=[1, 5, 10]):
             # 计算当前topk的文档的self bleu
             for ctx in topk_contexts:
                 docid = ctx['docid']
-                text = get_doc_text(docid, index, llm_data)
+                try:
+                    text = get_doc_text(docid, index, llm_data)
+                except Exception as e:
+                    print(f'error docid: {docid}')
                 # split text into word list
                 text = re.split(r'\W+', text)
                 context_texts.append(text)

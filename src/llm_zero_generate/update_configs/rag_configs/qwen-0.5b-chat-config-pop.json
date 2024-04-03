@@ -1,0 +1,11 @@
+{
+  "model_name": "Qwen2-0.5b",
+  "question_file_path": "../../data_v2/input_data/DPR/pop-test.jsonl",
+  "output_file_path": "../../data_v2/update_zero_gen_data/DPR/pop-test-gen-qwen2-0.5b-chat.jsonl",
+  "with_context": true,
+  "elasticsearch_url": "http://124.16.138.150:9978",
+  "index_name": "bm25_psgs_index",
+  "context_ref_num": 5,
+  "api-base": "http://124.16.138.150:8111/v1",
+  "api-key": "xxx"
+}

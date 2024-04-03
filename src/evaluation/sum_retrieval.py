@@ -39,6 +39,7 @@ import pandas as pd
 #     "filter_source_nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240204091108",
 #     "filter_source_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240204103944"
 # ]
+path_names = [ "low_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240327135107"]
 
 dataset_names = [
     "nq",
@@ -71,7 +72,7 @@ results_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
 for dataset in dataset_names:
     for path_name in path_names:
         # Construct the path to the TSV file
-        tsv_path = os.path.join(base_dir, path_name, dataset, "results", f"{dataset}_filter_bleu_retrieval.tsv")
+        tsv_path = os.path.join(base_dir, path_name, dataset, "results", f"{dataset}_retrieval.tsv")
 
         # Check if the TSV file exists
         if os.path.isfile(tsv_path):
@@ -110,7 +111,7 @@ for dataset, methods in results_dict.items():
     # Combine all method dataframes for current dataset into one
     dataset_df = pd.concat(df_list, ignore_index=True)
     # Define the desired order for the methods, in lowercase
-    method_order = ['bm25', 'contriever', 'bge-base', 'llm-embedder']
+    method_order = ['bm25']#, 'contriever', 'bge-base', 'llm-embedder']
 
     # Update the 'Method' column to be categorical with the desired order
     dataset_df['Method'] = pd.Categorical(dataset_df['Method'], categories=method_order, ordered=True)
@@ -125,7 +126,7 @@ for dataset, methods in results_dict.items():
     # Add the dataset_df to the dictionary of dataframes
     dfs[dataset] = dataset_df
 
-output_path = f"sum_tsvs/filter_bleu_retrieval_summary.tsv"
+output_path = f"sum_tsvs/low_retrieval_summary.tsv"
 # Write the dictionary of dataframes to a TSV file
 with open(output_path, 'w') as file:
     for dataset, df in dfs.items():

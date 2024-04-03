@@ -18,12 +18,13 @@ from collections import defaultdict
 #     "filter_bleu_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240131141119"
 # ]
 
-path_names = [
-    "filter_source_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240203141208",
-    "filter_source_nq_webq_pop_tqa_loop_output_bge-base_None_total_loop_10_20240204104046",
-    "filter_source_nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240204091108",
-    "filter_source_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240204103944"
-]
+# path_names = [
+#     "filter_source_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240203141208",
+#     "filter_source_nq_webq_pop_tqa_loop_output_bge-base_None_total_loop_10_20240204104046",
+#     "filter_source_nq_webq_pop_tqa_loop_output_contriever_None_total_loop_10_20240204091108",
+#     "filter_source_nq_webq_pop_tqa_loop_output_llm-embedder_None_total_loop_10_20240204103944"
+# ]
+path_names = [ "low_nq_webq_pop_tqa_loop_output_bm25_None_total_loop_10_20240327135107"]
 
 dataset_names = ["nq", "webq", "pop", "tqa"]
 base_dir = "/home/xiaoyang2020/chenxiaoyang_11/Rob_LLM/data_v2/loop_output/DPR"
@@ -123,7 +124,10 @@ with open(output_path, 'w') as file:
             for loop_order in range(1, 11):
                 file.write(f"loop{loop_order}\t")
                 for method_name in final_results[dataset][model_name].keys():
-                    file.write(f"{final_results[dataset][model_name][method_name][loop_order - 1]}\t")
+                    try:
+                        file.write(f"{final_results[dataset][model_name][method_name][loop_order - 1]}\t")
+                    except:
+                        print(f"dataset: {dataset}, model_name: {model_name}, method_name: {method_name}, loop_order: {loop_order}")
                 file.write("\n")
             file.write("\n")
         file.write("\n")

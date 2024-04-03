@@ -19,6 +19,7 @@ ret_model/
 logs/
 run_logs/
 run_configs/
+api_new/
 # any folder name started with api-for-open-llm
 api-for-open-llm/
 api-for-open-llm-2/

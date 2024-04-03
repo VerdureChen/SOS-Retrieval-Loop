@@ -57,6 +57,10 @@ def get_template_path(stage_name, method_name, data_name):
         template_path = f'rerank_configs/{method_name}-config-{data_name}.json'
     elif stage_name == 'generate':
         template_path = f'rag_configs/{method_name}-config-{data_name}.json'
+    elif stage_name == 'zero_update_generate':
+        template_path = f'update_configs/zero-shot_configs/{method_name}-config-{data_name}.json'
+    elif stage_name == 'update_generate':
+        template_path = f'update_configs/rag_configs/{method_name}-config-{data_name}.json'
     elif stage_name == 'indexing':
         template_path = f'index_configs/{method_name}-config-{data_name}.json'
     elif stage_name == 'post_process':

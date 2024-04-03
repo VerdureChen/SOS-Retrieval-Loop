@@ -40,6 +40,25 @@ def get_openai_api(model_name, api_base=None, api_key=None):
         print("Using baichuan2-13b-chat")
     elif model_name == "gpt-3.5-turbo":
         print("Using gpt-3.5-turbo")
+
+
+    elif model_name == "Qwen2-0.5b":
+        print("Using Qwen2-0.5b")
+    elif model_name == "Qwen2-1.8b":
+        print("Using Qwen2-1.8b")
+    elif model_name == "Qwen2-4b":
+        print("Using Qwen2-4b")
+    elif model_name == "Qwen2-7b":
+        print("Using Qwen2-7b")
+    elif model_name == "Qwen2-14b":
+        print("Using Qwen2-14b")
+    elif model_name == "Llama2-13b":
+        print("Using Llama2-13b")
+    elif model_name == "Llama2-7b":
+        print("Using Llama2-7b")
+    elif model_name == "baichuan2-7b-chat":
+        print("Using baichuan2-7b-chat")
+
     else:
         raise ValueError("Model name not supported")
     if api_base is None or api_key is None:
@@ -247,7 +266,7 @@ if __name__ == '__main__':
             print(f"Shard index: {shard_names.index(shard_name)}")
             print('-' * 50)
             shard_dataset = question_dataset.shard(num_shards, index=shard_names.index(shard_name))
-            shard_dataset = shard_dataset.map(get_response, num_proc=8, fn_kwargs=map_fn_kwargs)
+            shard_dataset = shard_dataset.map(get_response, num_proc=4, fn_kwargs=map_fn_kwargs)
             # only keep 'id', 'question', 'answers', 'response'
             shard_dataset = shard_dataset.select_columns(['id', 'question', 'answers', 'response'])
             shard_dataset.to_json(shard_name, force_ascii=False)

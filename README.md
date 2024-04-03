@@ -6,8 +6,8 @@
     <li><a href="#introduction">Introduction</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#supported-datasets-and-models">Datasets and Models</a></li>
-    <li><a href="#benchmark-results">Results</a></li>
+    <li><a href="#evaluation">Evaluation</a></li>
+    <li><a href="#moreuseexamples">More Use Examples</a></li> 
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
@@ -33,13 +33,15 @@ In this study, we construct and iteratively run a simulation pipeline to deeply 
 1. 方便使用的迭代模拟工具：我们提供了一个易于使用的迭代模拟工具，通过融合ElasticSearch、LangChain和api-for-llm的功能，能够方便地加载数据集，选择各种LLM和检索排序模型和自动迭代模拟。
 2. 支持多个数据集：包括但不限于Natural Questions, TriviaQA, WebQuestions, PopQA，通过将数据转化为jsonl格式，你可以使用本文的框架对任何数据进行实验。
 3. 支持多种检索模型和重排序模型：BM25, Contriever，LLM-Embedder，BGE，UPR，MonoT5等。
-4. 支持多种RAG pipeline演变评估方法，对每次实验的大量结果进行自动评价整理。
+4. 支持使用常用的LLM生成：gpt-3.5-turbo, chatglm3-6b, qwen-14b-chat, llama2-13b-chat, baichuan2-13b-chat等。
+5. 支持多种RAG pipeline演变评估方法，对每次实验的大量结果进行自动评价整理。
 -->
 
 1. **User-friendly Iteration Simulation Tool:** We offer an easy-to-use iteration simulation tool that integrates functionalities from [ElasticSearch](https://www.elastic.co/elasticsearch/), [LangChain](https://github.com/langchain-ai/langchain/), and [api-for-open-llm](https://github.com/xusenlinzy/api-for-open-llm), allowing for convenient dataset loading, selection of various LLMs and retrieval-ranking models, and automated iterative simulation.
 2. **Support for Multiple Datasets:** Including but not limited to [Natural Questions](https://github.com/google-research-datasets/natural-questions), [TriviaQA](https://github.com/mandarjoshi90/triviaqa), [WebQuestions](https://github.com/brmson/dataset-factoid-webquestions), [PopQA](https://github.com/AlexTMallen/adaptive-retrieval). By converting data to jsonl format, you can use the framework in this paper to experiment with any data.
 3. **Support for Various Retrieval and Re-ranking Models:** [BM25](https://python.langchain.com/docs/integrations/retrievers/elastic_search_bm25), [Contriever](https://github.com/facebookresearch/contriever), [LLM-Embedder](https://github.com/FlagOpen/FlagEmbedding), [BGE](https://github.com/FlagOpen/FlagEmbedding), [UPR](https://github.com/DevSinghSachan/unsupervised-passage-reranking), [MonoT5](https://github.com/castorini/pygaggle) and more.
-4. **Supports Various RAG Pipeline Evolution Evaluation Methods:** Automatically organizes and assesses the vast amount of results from each experiment.
+4. **Support for frequently-used LLMs:** [GPT-3.5 turbo](https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates), [chatglm3-6b](https://huggingface.co/THUDM/chatglm3-6b), [Qwen-14B-Chat](https://huggingface.co/Qwen/Qwen-14B-Chat), [Llama-2-13b-chat-hf](https://huggingface.co/meta-llama/Llama-2-13b-chat-hf), [Baichuan2-13B-Chat](https://huggingface.co/baichuan-inc/Baichuan2-13B-Chat).
+5. **Supports Various RAG Pipeline Evolution Evaluation Methods:** Automatically organizes and assesses the vast amount of results from each experiment.
 
 
 <!-- GETTING STARTED -->
@@ -210,13 +212,19 @@ Since our code involves many datasets, models, and index functionalities, we use
     cd src/retrieval_loop
     bash run_index_builder.sh
    ```
-4. 将Zero-Shot RAG生成的内容添加到索引，并获得加入Zero-Shot数据后的检索结果：使用`src/run_zero-shot.sh`，通过修改文件中的`GENERATE_MODEL_NAMES`和`QUERY_DATA_NAMES`配置，能够在一次运行中将所有数据和模型的zero-shot RAG生成结果添加到索引，并获得加入Zero-Shot数据后的检索结果。需要注意的是`run_items`列表表示了需要运行的检索-重排方法，其中每个元素构成例如`"item6 bm25 monot5"`，表明本次运行的第六个Zero-Shot RAG实验是基于BM25+MonoT5的检索-重排方法。
+4. 对Zero-Shot RAG生成的数据进行后处理，对生成的文本进行过滤、ID重命名等操作：使用`src/post_process/post_process.sh`，通过修改文件中的`MODEL_NAMES`和`QUERY_DATA_NAMES`配置，能够在一次运行中将所有数据和模型的zero-shot RAG生成结果。对于Zero-shot数据，我们将`LOOP_NUM`设置为0，`LOOP_CONFIG_PATH_NAME`,`TOTAL_LOG_DIR`,`TOTAL_OUTPUT_DIR`指定脚本configs,logs和output路径，如果不存在将自动生成。`FROM_METHOD`表示当前待处理的文本的生成方法，这将作为tag添加到处理后的文档ID中。`INPUT_FILE_PATH`为待处理的文本文件路径，其中每个包含每个数据集为名称的目录，目录下是各个Zero-shot结果文件。此外还需注意，核对`INPUT_FILE_NAME`与实际输入文本名一致。
+    运行：
+    ```bash
+    cd src/post_process
+    bash post_process.sh
+    ```
+5. 将Zero-Shot RAG生成的内容添加到索引，并获得加入Zero-Shot数据后的检索结果：使用`src/run_zero-shot.sh`，通过修改文件中的`GENERATE_MODEL_NAMES`和`QUERY_DATA_NAMES`配置，能够在一次运行中将所有数据和模型的zero-shot RAG生成结果添加到索引，并获得加入Zero-Shot数据后的检索结果。需要注意的是`run_items`列表表示了需要运行的检索-重排方法，其中每个元素构成例如`"item6 bm25 monot5"`，表明本次运行的第六个Zero-Shot RAG实验是基于BM25+MonoT5的检索-重排方法。
    运行：
    ```bash
    cd src
    bash run_zero-shot.sh
     ```
-5. 运行主要的LLM-generated Text模拟循环：使用`src/run_loop.sh`，通过修改文件中的`GENERATE_MODEL_NAMES`和`QUERY_DATA_NAMES`配置，能够批量化运行所有数据和模型的LLM-generated Text模拟循环。你可以通过设置`TOTAL_LOOP_NUM`来控制循环次数，由于涉及到索引多次更新，每次只能运行一个检索-重排方法pipeline。如果你想改变RAG pipeline中LLM能看到的上下文个数，你可以通过修改`CONTEXT_REF_NUM`来实现，默认设置为5。
+6. 运行主要的LLM-generated Text模拟循环：使用`src/run_loop.sh`，通过修改文件中的`GENERATE_MODEL_NAMES`和`QUERY_DATA_NAMES`配置，能够批量化运行所有数据和模型的LLM-generated Text模拟循环。你可以通过设置`TOTAL_LOOP_NUM`来控制循环次数，由于涉及到索引多次更新，每次只能运行一个检索-重排方法pipeline。如果你想改变RAG pipeline中LLM能看到的上下文个数，你可以通过修改`CONTEXT_REF_NUM`来实现，默认设置为5。
     运行：
     ```bash
     cd src
@@ -265,15 +273,54 @@ Through the following steps, you can reproduce our experiments. Before that, ple
     cd src/retrieval_loop
     bash run_index_builder.sh
    ```
-4. Add the content generated by Zero-Shot RAG to the index and obtain the retrieval results after adding Zero-Shot data: Use `src/run_zero-shot.sh`, by modifying the `GENERATE_MODEL_NAMES` and `QUERY_DATA_NAMES` configuration in the file, you can add the zero-shot RAG generation results of all data and models to the index in one run, and obtain the retrieval results after adding Zero-Shot data. Note that the `run_items` list indicates the retrieval-re-ranking methods that need to be run, where each element is constructed as `"item6 bm25 monot5"`, indicating that the sixth Zero-Shot RAG experiment in this run is based on the BM25+MonoT5 retrieval-re-ranking method.
+4. Post-process the data generated by Zero-Shot RAG, filter the generated text, rename IDs, etc.: Use `src/post_process/post_process.sh`, by modifying the `MODEL_NAMES` and `QUERY_DATA_NAMES` configuration in the file, you can process all data and models of zero-shot RAG generation results in one run. For Zero-shot data, we set `LOOP_NUM` to 0, and `LOOP_CONFIG_PATH_NAME`, `TOTAL_LOG_DIR`, `TOTAL_OUTPUT_DIR` specify the paths of the script configs, logs, and output, respectively. `FROM_METHOD` indicates the generation method of the current text to be processed, which will be added as a tag to the processed document ID. `INPUT_FILE_PATH` is the path to the text file to be processed, with each directory containing the name of each dataset, and each directory containing various Zero-shot result files. In addition, make sure that `INPUT_FILE_NAME` is consistent with the actual input text name.
+    Run:
+    ```bash
+    cd src/post_process
+    bash post_process.sh
+    ```
+5. Add the content generated by Zero-Shot RAG to the index and obtain the retrieval results after adding Zero-Shot data: Use `src/run_zero-shot.sh`, by modifying the `GENERATE_MODEL_NAMES` and `QUERY_DATA_NAMES` configuration in the file, you can add the zero-shot RAG generation results of all data and models to the index in one run, and obtain the retrieval results after adding Zero-Shot data. Note that the `run_items` list indicates the retrieval-re-ranking methods that need to be run, where each element is constructed as `"item6 bm25 monot5"`, indicating that the sixth Zero-Shot RAG experiment in this run is based on the BM25+MonoT5 retrieval-re-ranking method.
    Run:
    ```bash
    cd src
    bash run_zero-shot.sh
     ```
-5. Run the main LLM-generated Text simulation loop: Use `src/run_loop.sh`, by modifying the `GENERATE_MODEL_NAMES` and `QUERY_DATA_NAMES` configuration in the file, you can run the LLM-generated Text Simulation loop for all data and models in batches. You can control the number of loops by setting `TOTAL_LOOP_NUM`. Since it involves updating the index multiple times, only one retrieval-re-ranking method pipeline can be run at a time. If you want to change the number of contexts that LLM can see in the RAG pipeline, you can do so by modifying `CONTEXT_REF_NUM`, which is set to 5 by default.
+6. Run the main LLM-generated Text simulation loop: Use `src/run_loop.sh`, by modifying the `GENERATE_MODEL_NAMES` and `QUERY_DATA_NAMES` configuration in the file, you can run the LLM-generated Text Simulation loop for all data and models in batches. You can control the number of loops by setting `TOTAL_LOOP_NUM`. Since it involves updating the index multiple times, only one retrieval-re-ranking method pipeline can be run at a time. If you want to change the number of contexts that LLM can see in the RAG pipeline, you can do so by modifying `CONTEXT_REF_NUM`, which is set to 5 by default.
    Run:
     ```bash
     cd src
     bash run_loop.sh
     ```
+<!--
+## Evaluation
+面向实验中生成的大量数据，我们的框架支持多种批量化的评估方法，设置`src/evaluation/run_context_eva.sh`脚本中的`QUERY_DATA_NAMES`和`RESULT_NAMES`后，你可以选择任意可支持的task进行评估，包括：
+1. `TASK="retrieval"`：对每次迭代的检索和重排序结果进行评估，包括Acc@5和Acc@20。
+2. `TASK="QA"`：对每次迭代的QA结果进行评估，指标为EM。
+3. `TASK="context_answer"`：计算每个LLM在每次迭代结束时回答正确（EM=1）或错误（EM=0）时上下文（默认为top5检索结果）中包含正确答案的文档数量。
+4. `TASK="bleu"`：计算每次迭代上下文的SELF-BLEU值，默认计算2-gram和3-gram。
+5. `TASK="percentage"`：计算每次迭代top5、20、50的上下文中各LLM和人类生成文本的百分比。
+6. `TASK="misQA"`：在Misinformation实验中，计算每次迭代的QA结果中特定错误答案的EM。
+7. `TASK="QA_llm_mis"`和`TASK="QA_llm_right"`：在Misinformation实验中，计算每次迭代的QA结果中特定错误答案或正确答案经过GPT-3.5-Turbo判别后确定文本确实支持该答案的情况（参考文中的EM_llm）。
+8. `TASK="filter_bleu_*"`和`TASK="filter_source_*"`：在Filtering实验中，不同过滤方法下计算每次迭代的评估结果，*代表前面已经出现的评估内容（retireval, percentage, context_answer）。
+评估后生成的结果文件默认存于对应`RESULT_DIR/RESULT_NAME/QUERY_DATA_NAME/results`目录下。
+-->
+## Evaluation
+For the large amount of results generated in the experiment, our framework supports various batch evaluation methods. After setting `QUERY_DATA_NAMES` and `RESULT_NAMES` in `src/evaluation/run_context_eva.sh`, you can choose any supported task for evaluation, including:
+1. `TASK="retrieval"`: Evaluate the retrieval and re-ranking results of each iteration, including Acc@5 and Acc@20.
+2. `TASK="QA"`: Evaluate the QA results of each iteration (EM).
+3. `TASK="context_answer"`: Calculate the number of documents in the contexts (default top 5 retrieval results) that contain the correct answer when each LLM answers correctly (EM=1) or incorrectly (EM=0) at the end of each iteration.
+4. `TASK="bleu"`: Calculate the SELF-BLEU value of the contexts (default top 5 retrieval results) at each iteration, with 2-gram and 3-gram calculated by default.
+5. `TASK="percentage"`: Calculate the percentage of each LLM and human-generated text in the top 5, 20, and 50 contexts at each iteration.
+6. `TASK="misQA"`: In the Misinformation experiment, calculate the EM of specific incorrect answers in the QA results at each iteration.
+7. `TASK="QA_llm_mis"` and `TASK="QA_llm_right"`: In the Misinformation experiment, calculate the situation where specific incorrect or correct answers in the QA results at each iteration are determined to be supported by the text after being judged by GPT-3.5-Turbo (refer to EM_llm in the paper).
+8. `TASK="filter_bleu_*"` and `TASK="filter_source_*"`: In the Filtering experiment, calculate the evaluation results of each iteration under different filtering methods, where * represents the evaluation content that has already appeared (retrieval, percentage, context_answer).
+
+The results generated after evaluation are stored by default in the corresponding `RESULT_DIR/RESULT_NAME/QUERY_DATA_NAME/results` directory.
+
+
+<!--
+## More Use Examples
+1. 如何在不同阶段使用不同的LLM
+2. Misinformation实验
+3. Filtering实验
+-->
