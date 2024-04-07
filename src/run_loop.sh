@@ -8,8 +8,8 @@ TOTAL_LOOP_NUM=10
 RETRIEVAL_MODEL_NAME=bm25 # dpr contriever retromae all-mpnet bge-base llm-embedder bm25
 RERANK_MODEL_NAME=None #monot5 upr bge rankgpt
 CORPUS_NAME=psgs_w100
-FILTER_METHOD_NAME=None #None, filter_source, source
-GENERATE_TASK=update_generate
+FILTER_METHOD_NAME=None #None, filter_source, filter_bleu
+GENERATE_TASK=generate
 #QUERY_DATA_NAME=nq
 #QUERY_FILE_PATH="../../data_v2/input_data/DPR/${QUERY_DATA_NAME}-test-h10.jsonl"
 
@@ -25,18 +25,18 @@ GENERATE_MODEL_NAMES_F10=(gpt-3.5-turbo qwen-14b-chat llama2-13b-chat)
 #GENERATE_MODEL_NAMES=(gpt-3.5-turbo chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat) #running: pop trivia finished: nq wq
 #GENERATE_DATA_NAMES=(nq)
 GENERATE_BASE_AND_KEY=(
-   "gpt-3.5-turbo https://one-api.ponte.top/v1 sk-X9yZhl9J4ojnosSlF25c6eAcE0014a9c84963fAbD6A5704a"
-   "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
-#   "qwen-14b-chat http://124.16.138.150:8113/v1 xxx"
-   "llama2-7b-chat http://124.16.138.144:8201/v1 xxx"
-   "baichuan2-7b-chat http://124.16.138.144:8202/v1 xxx"
-   "llama2-13b-chat http://124.16.138.150:8223/v1 xxx"
-   "baichuan2-13b-chat http://124.16.138.144:9202/v1 xxx"
-   "qwen-0.5b-chat http://124.16.138.144:7001/v1 xxx"
-   "qwen-1.8b-chat http://124.16.138.144:7002/v1 xxx"
-   "qwen-4b-chat http://124.16.138.144:7003/v1 xxx"
-   "qwen-7b-chat http://124.16.138.144:7004/v1 xxx"
-   "qwen-14b-chat http://124.16.138.144:7005/v1 xxx"
+   "gpt-3.5-turbo https://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "chatglm3-6b http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+#   "qwen-14b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "llama2-7b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "baichuan2-7b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "llama2-13b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "baichuan2-13b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "qwen-0.5b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "qwen-1.8b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "qwen-4b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "qwen-7b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
+   "qwen-14b-chat http://xxx.xxx.xxx.xxx:xx/v1 xxx"
   )
 
 

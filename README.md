@@ -206,7 +206,7 @@ Since our code involves many datasets, models, and index functionalities, we use
     cd src/llm_zero_generate
     bash run_generate.sh
     ```
-3. 建立数据集索引：使用`src/retrieval_loop/run_index_builder.sh`，通过修改文件中的`MODEL_NAMES`和`DATA_NAMES`配置，能够一次性建立所有数据和模型的索引。你也可以通过配置`query_files`和`output_files`来获得基于该索引的对应方法的检索结果。
+3. 建立数据集索引：使用`src/retrieval_loop/run_index_builder.sh`，通过修改文件中的`MODEL_NAMES`和`DATA_NAMES`配置，能够一次性建立所有数据和模型的索引。你也可以通过配置`query_files`和`output_files`来获得基于该索引的对应方法的检索结果。在我们的实验中所有检索模型checkpoint放在`ret_model`目录下。
    运行：
    ```bash
     cd src/retrieval_loop
@@ -267,7 +267,7 @@ Through the following steps, you can reproduce our experiments. Before that, ple
     cd src/llm_zero_generate
     bash run_generate.sh
     ```
-3. Build Dataset Index: Use `src/retrieval_loop/run_index_builder.sh`, by modifying the `MODEL_NAMES` and `DATA_NAMES` configuration in the file, you can build indexes for all data and models at once. You can also obtain retrieval results based on the corresponding method by configuring `query_files` and `output_files`.
+3. Build Dataset Index: Use `src/retrieval_loop/run_index_builder.sh`, by modifying the `MODEL_NAMES` and `DATA_NAMES` configuration in the file, you can build indexes for all data and models at once. You can also obtain retrieval results based on the corresponding method by configuring `query_files` and `output_files`. In our experiments, all retrieval model checkpoints are placed in the `ret_model` directory.
    Run:
    ```bash
     cd src/retrieval_loop
@@ -320,7 +320,118 @@ The results generated after evaluation are stored by default in the correspondin
 
 <!--
 ## More Use Examples
-1. 如何在不同阶段使用不同的LLM
-2. Misinformation实验
-3. Filtering实验
+### 在不同迭代阶段使用不同的LLM
+通过修改`src/run_loop.sh`中的`GENERATE_MODEL_NAMES`配置，你可以在不同阶段使用不同的LLM，例如：
+```bash
+GENERATE_MODEL_NAMES_F3=(qwen-0.5b-chat qwen-1.8b-chat qwen-4b-chat)
+GENERATE_MODEL_NAMES_F7=(qwen-7b-chat llama2-7b-chat baichuan2-7b-chat)
+GENERATE_MODEL_NAMES_F10=(gpt-3.5-turbo qwen-14b-chat llama2-13b-chat)
+```
+表示在前三轮迭代中使用qwen-0.5b-chat、qwen-1.8b-chat和qwen-4b-chat，第四到七轮迭代中使用qwen-7b-chat、llama2-7b-chat和baichuan2-7b-chat，第八到十轮迭代中使用gpt-3.5-turbo、qwen-14b-chat和llama2-13b-chat。我们可以以此来模拟LLM性能随时间变化而增强时对RAG系统的影响。请记得在`GENERATE_BASE_AND_KEY`中提供对应的信息，同时修改`GENERATE_TASK`为`update_generate`。
+### Misinformation实验
+1. 我们首先使用GPT-3.5-Turbo为每个query生成5个错误答案,然后随机选取一个错误答案，令所有实验使用到的LLM为其生成支持文本。你可以修改`src/misinfo/mis_config`目录下的`{dataset}_mis_config_answer_gpt.json`配置文件（用于生成错误答案）和`{dataset}_mis_config_passage_{llm}.json`配置文件（用于生成包含错误答案的文本），对每个数据集和生成内容路径以及api信息进行配置.
+2. 运行`src/misinfo/run_gen_misinfo.sh`脚本，能够在一次运行中生成所有数据和模型的Misinformation文本。
+3. 参考[Running the Code](#running-the-code)中的步骤4到6，将生成的Misinformation文本添加到索引，并获得加入Misinformation数据后的RAG。
+4. 参考[Evaluation](#evaluation)运行`src/evaluation/run_context_eva.sh`脚本，对Misinformation实验的结果进行评估，推荐使用`"retrieval"`,`"context_answer"`,`"QA_llm_mis"`,`"QA_llm_right"`评估任务。
+### Filtering实验
+在我们的实验中，我们分别进行了对检索获得的上下文的SELF-BLEU过滤和来源过滤。
+1. SELF-BLEU过滤：我们计算top检索结果的SELF-BLEU值，确保输入给LLM的上下文维持较高的相似度（也就是较低的SELF-BLEU值，默认为0.4）。要启用此功能，将`src/run_loop.sh`中设置`FILTER_METHOD_NAME=filter_bleu`。
+2. 来源过滤：我们识别top检索结果中来源于LLM的文本并将其排除。我们使用[Hello-SimpleAI/chatgpt-qa-detector-roberta](https://huggingface.co/Hello-SimpleAI/chatgpt-qa-detector-roberta)进行识别，请在实验开始前将该checkpoint放置于`ret_model`目录下。要启用此功能，将`src/run_loop.sh`中设置`FILTER_METHOD_NAME=filter_source`。
+3. 参考[Evaluation](#evaluation)运行`src/evaluation/run_context_eva.sh`脚本，对Filtering实验的结果进行评估，推荐使用`"retrieval"`,`"QA"`,`"filter_bleu_*"`,`"filter_source_*"`评估任务。
+### 从索引删除相应文档
+由于我们的实验涉及到索引的动态更新，我们不可能在每次模拟中重新从零构造索引。相反地，在每次模拟时，我们都会将新增文本ID记录在`src/run_logs`中对应此次实验的`index_add_logs`目录下，待实验结束后，我们通过`src/post_process/delete_doc_from_index.py`脚本删除索引中的相应文档。
+1. 当需要删除BM25索引中的文档时，运行：
+```bash
+cd src/post_process
+python delete_doc_from_index.py --config_file_path delete_configs/delete_config_bm25.json
+```
+其中，`src/post_process/delete_configs/delete_config_bm25.json`是对应配置文件，其中包含参数：
+```json
+{
+    "id_files": ["../run_logs/zero-shot_retrieval_log_low/index_add_logs"],
+    "model_name": "bm25",
+    "index_path": "../../data_v2/indexes",
+    "index_name": "bm25_psgs_index",
+    "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx",
+    "delete_log_path": "../run_logs/zero-shot_retrieval_log_low/index_add_logs"
+}
+```
+其中，`id_files`是需要删除的文档ID所在文件目录，`model_name`是索引模型名称，`index_path`是索引存储路径，`index_name`是索引名称，`elasticsearch_url`是ElasticSearch的url，`delete_log_path`是删除文档ID记录的存储路径。不同索引的ID文件可以混合放置在同个目录下，脚本将自动读取目录下对应该索引的文档ID，并删除索引中的文档。
+2. 当需要删除Faiss索引中的文档时，运行：
+```bash
+cd src/post_process
+python delete_doc_from_index.py --config_file_path delete_configs/delete_config_faiss.json
+```
+其中，`src/post_process/delete_configs/delete_config_faiss.json`是对应配置文件，其中包含参数：
+```json
+{
+     "id_files": ["../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_contriever_None_total_loop_10_20240206164013/index_add_logs"],
+    "model_name": "faiss",
+    "index_path": "../../data_v2/indexes",
+    "index_name": "contriever_faiss_index",
+    "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx",
+    "delete_log_path": "../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_contriever_None_total_loop_10_20240206164013/index_add_logs"
+}
+```
+其中，`id_files`是需要删除的文档ID所在文件目录，`model_name`是索引模型名称，`index_path`是索引存储路径，`index_name`是索引名称，`elasticsearch_url`是ElasticSearch的url，`delete_log_path`是删除文档ID记录的存储路径。
 -->
+## More Use Examples
+### Using Different LLMs at Different Iteration Stages
+By modifying the `GENERATE_MODEL_NAMES` configuration in `src/run_loop.sh`, you can use different LLMs at different stages. For example:
+```bash
+GENERATE_MODEL_NAMES_F3=(qwen-0.5b-chat qwen-1.8b-chat qwen-4b-chat)
+GENERATE_MODEL_NAMES_F7=(qwen-7b-chat llama2-7b-chat baichuan2-7b-chat)
+GENERATE_MODEL_NAMES_F10=(gpt-3.5-turbo qwen-14b-chat llama2-13b-chat)
+```
+Indicates that qwen-0.5b-chat, qwen-1.8b-chat, and qwen-4b-chat are used in the first three rounds of iteration, qwen-7b-chat, llama2-7b-chat, and baichuan2-7b-chat are used in the fourth to seventh rounds of iteration, and gpt-3.5-turbo, qwen-14b-chat, and llama2-13b-chat are used in the eighth to tenth rounds of iteration. 
+
+We can use this to simulate the impact of LLM performance enhancement over time on the RAG system. Remember to provide the corresponding information in `GENERATE_BASE_AND_KEY`, and modify `GENERATE_TASK` to `update_generate`.
+
+### Misinformation Experiment
+1. We first use GPT-3.5-Turbo to generate 5 incorrect answers for each query, and then randomly select an incorrect answer, and let all LLMs used in the experiment generate supporting text for it. You can modify the `{dataset}_mis_config_answer_gpt.json` configuration file (used to generate incorrect answers) and `{dataset}_mis_config_passage_{llm}.json` configuration file (used to generate text containing incorrect answers) in the `src/misinfo/mis_config` directory to configure each dataset and generation content path and api information.
+2. Run the `src/misinfo/run_gen_misinfo.sh` script to generate Misinformation text for all data and models in one run.
+3. Refer to [Running the Code](#running-the-code) steps 4 to 6 to add the generated Misinformation text to the index and obtain the RAG after adding Misinformation data.
+4. Refer to [Evaluation](#evaluation) to run the `src/evaluation/run_context_eva.sh` script to evaluate the results of the Misinformation experiment, and it is recommended to use the `"retrieval"`, `"context_answer"`, `"QA_llm_mis"`, and `"QA_llm_right"` evaluation tasks.
+
+### Filtering Experiment
+In our experiments, we conducted SELF-BLEU filtering and source filtering of the retrieved contexts separately.
+1. **SELF-BLEU filtering**: We calculate the SELF-BLEU value of the top retrieval results to ensure that the context input to the LLM maintains a high degree of similarity (i.e., a low SELF-BLEU value, default is 0.4). To enable this feature, set `FILTER_METHOD_NAME=filter_bleu` in `src/run_loop.sh`.
+2. **Source filtering**: We identify text from the LLM in the top retrieval results and exclude it. We use [Hello-SimpleAI/chatgpt-qa-detector-roberta](https://huggingface.co/Hello-SimpleAI/chatgpt-qa-detector-roberta) for identification. Please place the checkpoint in the `ret_model` directory before the experiment starts. To enable this feature, set `FILTER_METHOD_NAME=filter_source` in `src/run_loop.sh`.
+3. Refer to [Evaluation](#evaluation) to run the `src/evaluation/run_context_eva.sh` script to evaluate the results of the Filtering experiment, and it is recommended to use the `"retrieval"`, `"QA"`, `"filter_bleu_*"`, and `"filter_source_*"` evaluation tasks.
+
+### Deleting Corresponding Documents from the Index
+Since our experiments involve dynamic updates of the index, it is not possible to reconstruct the index from scratch in each simulation. Instead, in each simulation, we record the IDs of the newly added text in the `src/run_logs` directory under the `index_add_logs` directory corresponding to this experiment. After the experiment is over, we delete the corresponding documents from the index using the `src/post_process/delete_doc_from_index.py` script.
+1. When you need to delete documents from the BM25 index, run:
+```bash
+cd src/post_process
+python delete_doc_from_index.py --config_file_path delete_configs/delete_config_bm25.json
+```
+Where `src/post_process/delete_configs/delete_config_bm25.json` is the corresponding configuration file, which contains parameters:
+```json
+{
+    "id_files": ["../run_logs/zero-shot_retrieval_log_low/index_add_logs"],
+    "model_name": "bm25",
+    "index_path": "../../data_v2/indexes",
+    "index_name": "bm25_psgs_index",
+    "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx",
+    "delete_log_path": "../run_logs/zero-shot_retrieval_log_low/index_add_logs"
+}
+```
+Where `id_files` is the directory where the document IDs to be deleted are located, `model_name` is the index model name, `index_path` is the index storage path, `index_name` is the index name, `elasticsearch_url` is the url of ElasticSearch, and `delete_log_path` is the storage path of the document ID record. The ID files of different indexes can be mixed in the same directory, and the script will automatically read the document IDs corresponding to the index in the directory and delete the documents from the index.
+2. When you need to delete documents from the Faiss index, run:
+```bash
+cd src/post_process
+python delete_doc_from_index.py --config_file_path delete_configs/delete_config_faiss.json
+```
+Where `src/post_process/delete_configs/delete_config_faiss.json` is the corresponding configuration file, which contains parameters:
+```json
+{
+     "id_files": ["../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_contriever_None_total_loop_10_20240206164013/index_add_logs"],
+    "model_name": "faiss",
+    "index_path": "../../data_v2/indexes",
+    "index_name": "contriever_faiss_index",
+    "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx",
+    "delete_log_path": "../run_logs/mis_filter_bleu_nq_webq_pop_tqa_loop_log_contriever_None_total_loop_10_20240206164013/index_add_logs"
+}
+```
+Where `id_files` is the directory where the document IDs to be deleted are located, `model_name` is the index model name, `index_path` is the index storage path, `index_name` is the index name, `elasticsearch_url` is the url of ElasticSearch, and `delete_log_path` is the storage path of the document ID record.

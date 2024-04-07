@@ -4,26 +4,15 @@ datasets=(nq pop webq tqa)
 models=(qwen chatglm llama baichuan)
 # first generate false answer using gpt
 # shellcheck disable=SC2068
-#for dataset in ${datasets[@]}
-#do
+for dataset in ${datasets[@]}
+do
 
-#        python gen_misinfo_llm.py --config_file_path  mis_config/${dataset}_mis_config_answer_gpt.json
+        python gen_misinfo_llm.py --config_file_path  mis_config/${dataset}_mis_config_answer_gpt.json
 
-#done
-#
-#wait
+done
 
-#generate misinformation passages using gpt
-# shellcheck disable=SC2068
-#for dataset in ${datasets[@]}
-#do
-#    # shellcheck disable=SC2068
-#    for model in ${models[@]}
-#    do
-##        python gen_misinfo_llm.py --config_file_path  mis_config/${dataset}_mis_config_passage_gpt.json
-#    done
-#done
-#wait
+wait
+
 #generate misinformation passages using models
 # shellcheck disable=SC2068
 for dataset in ${datasets[@]}
