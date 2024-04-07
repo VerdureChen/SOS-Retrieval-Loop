@@ -7,8 +7,7 @@
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#evaluation">Evaluation</a></li>
-    <li><a href="#moreuseexamples">More Use Examples</a></li> 
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#more-use-examples">More Use Examples</a></li> 
   </ol>
 </details>
 
