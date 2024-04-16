@@ -3,7 +3,7 @@
 
 MODEL_NAMES=(llama2-7b-chat) #chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat gpt-3.5-turbo
 GENERATE_BASE_AND_KEY=(
-   "gpt-3.5-turbo https://one-api.ponte.top/v1 sk-X9yZhl9J4ojnosSlF25c6eAcE0014a9c84963fAbD6A5704a"
+   "gpt-3.5-turbo https://one-api.ponte.top/v1 xxx"
    "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
 #   "qwen-14b-chat http://124.16.138.150:8113/v1 xxx"
    "llama2-7b-chat http://124.16.138.144:8201/v1 xxx"
