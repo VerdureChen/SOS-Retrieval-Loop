@@ -3,18 +3,18 @@
 
 MODEL_NAMES=(llama2-7b-chat) #chatglm3-6b qwen-14b-chat llama2-13b-chat baichuan2-13b-chat gpt-3.5-turbo
 GENERATE_BASE_AND_KEY=(
-   "gpt-3.5-turbo https://one-api.ponte.top/v1 xxx"
-   "chatglm3-6b http://124.16.138.150:8113/v1 xxx"
-#   "qwen-14b-chat http://124.16.138.150:8113/v1 xxx"
-   "llama2-7b-chat http://124.16.138.144:8201/v1 xxx"
-   "baichuan2-7b-chat http://124.16.138.144:8202/v1 xxx"
-   "llama2-13b-chat http://124.16.138.150:8223/v1 xxx"
-   "baichuan2-13b-chat http://124.16.138.144:9202/v1 xxx"
-   "qwen-0.5b-chat http://124.16.138.144:7001/v1 xxx"
-   "qwen-1.8b-chat http://124.16.138.144:7002/v1 xxx"
-   "qwen-4b-chat http://124.16.138.144:7003/v1 xxx"
-   "qwen-7b-chat http://124.16.138.144:7004/v1 xxx"
-   "qwen-14b-chat http://124.16.138.144:7005/v1 xxx"
+   "gpt-3.5-turbo xxx xxx"
+   "chatglm3-6b xxx xxx"
+#   "qwen-14b-chat xxx xxx"
+   "llama2-7b-chat xxx xxx"
+   "baichuan2-7b-chat xxx xxx"
+   "llama2-13b-chat xxx xxx"
+   "baichuan2-13b-chat xxx xxx"
+   "qwen-0.5b-chat xxx xxx"
+   "qwen-1.8b-chat xxx xxx"
+   "qwen-4b-chat xxx xxx"
+   "qwen-7b-chat xxx xxx"
+   "qwen-14b-chat xxx xxx"
   )
 
 DATA_NAMES=(tqa pop nq webq)
