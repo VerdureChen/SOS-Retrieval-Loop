@@ -21,7 +21,7 @@
 
 ## Introduction
 
-In this study, we construct and iteratively run a simulation pipeline to deeply investigate the short-term and long-term effects of LLM text on RAG systems.
+In this study, we construct and iteratively run a simulation pipeline to deeply investigate the short-term and long-term effects of LLM text on RAG systems. [(Arxiv)](https://arxiv.org/pdf/2404.10496.pdf)
 
 ![Pipeline Structure](pipeline.png)
 
