@@ -425,6 +425,7 @@ Where `src/post_process/delete_configs/delete_config_bm25.json` is the correspon
 }
 ```
 Where `id_files` is the directory where the document IDs to be deleted are located, `model_name` is the index model name, `index_path` is the index storage path, `index_name` is the index name, `elasticsearch_url` is the url of ElasticSearch, and `delete_log_path` is the storage path of the document ID record. The ID files of different indexes can be mixed in the same directory, and the script will automatically read the document IDs corresponding to the index in the directory and delete the documents from the index.
+
 2. When you need to delete documents from the Faiss index, run:
 ```bash
 cd src/post_process
