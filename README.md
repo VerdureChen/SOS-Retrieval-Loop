@@ -14,7 +14,9 @@
 <!-- News and Updates -->
 
 ## News and Updates
-- [05/12/2024] Published code used in our experiments.
+- [05/15/2024] 🎉 Our paper has been accepted to ACL 2024.
+- [05/12/2024] 💻 Published code used in our experiments.
+
 
 
 <!-- Introduction -->
@@ -73,6 +75,12 @@ To install the required packages, you can create a conda environment:
 conda create --name SOS_LOOP python=3.10
 ```
 
+Activate the conda environment:
+
+```sh
+conda activate SOS_LOOP
+```
+
 then use pip to install required packages:
 
 ```sh
@@ -107,7 +115,7 @@ When starting **api-for-open-llm**, you need to set the `PORT` in the `.env` fil
       "query_files": ["../../data_v2/input_data/DPR/nq-test-h10.jsonl"],
       "query_page_content_column": "question",
       "output_files": ["../../data_v2/ret_output/DPR/nq-test-h10-bge-base"],
-      "elasticsearch_url": "http://124.16.138.142:9978"
+      "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx"
 }
 ```
 其中，`new_text_file`是需要新添加到索引的文档路径，`retrieval_model`是使用的检索模型，`index_name`是索引的名称，`index_path`是索引的存储路径，`index_add_path`是索引的增量文档在索引中的ID存放路径（这对于我们需要从索引中删除特定文档特别有用），`page_content_column`是文档文件中待索引的文本的列名，`index_exists`指示索引是否已经存在（如果设置为false则会新建相应索引，否则从路径读取已存在的索引），`normalize_embeddings`是是否对检索模型的输出进行归一化，`query_files`是查询文件的路径，`query_page_content_column`是查询文件中查询文本的列名，`output_files`是输出检索结果文件的路径（与query_files一一对应），`elasticsearch_url`是ElasticSearch的url。
@@ -143,7 +151,7 @@ Since our code involves many datasets, models, and index functionalities, we use
           "query_files": ["../../data_v2/input_data/DPR/nq-test-h10.jsonl"],
           "query_page_content_column": "question",
           "output_files": ["../../data_v2/ret_output/DPR/nq-test-h10-bge-base"],
-          "elasticsearch_url": "http://124.16.138.142:9978"
+          "elasticsearch_url": "http://xxx.xxx.xxx.xxx:xxx"
     }
     ```
    
