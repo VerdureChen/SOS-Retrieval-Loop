@@ -14,6 +14,7 @@
 <!-- News and Updates -->
 
 ## News and Updates
+- [06/04/2024] 📝 You can refer to our [Arxiv paper](https://arxiv.org/pdf/2404.10496.pdf) and [Zhihu (Chinese)](https://zhuanlan.zhihu.com/p/701436734) for more details.
 - [05/15/2024] 🎉 Our paper has been accepted to ACL 2024.
 - [05/12/2024] 💻 Published code used in our experiments.
 
@@ -23,7 +24,7 @@
 
 ## Introduction
 
-In this study, we construct and iteratively run a simulation pipeline to deeply investigate the short-term and long-term effects of LLM text on RAG systems. [(Arxiv)](https://arxiv.org/pdf/2404.10496.pdf)
+In this study, we construct and iteratively run a simulation pipeline to deeply investigate the short-term and long-term effects of LLM text on RAG systems. 
 
 ![Pipeline Structure](pipeline.png)
 
